@@ -1,12 +1,15 @@
 import React from "react";
 import { useState } from "react";
+import SchematicView from "./SchematicView";
+import Login from "./Login";
 
 function Register({ totals, firstChild, secondChild }) {
 
-    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [confirmEmail, setConfirmEmail] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [password, setPassword] = useState('');
+    const [hasRegistered, setHasRegistered] = useState(false);
 
     const style = {
         display: 'flex',
@@ -41,35 +44,34 @@ function Register({ totals, firstChild, secondChild }) {
         setPassword(e.target.value);
     };
 
+    const handleConfirmPasswordChange = (e) => {
+        setConfirmPassword(e.target.value);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (confirmEmail !== email) {
+            alert('Emails do not match!')
+        }
+
         try {
             let response = await fetch('/api/Account/Register',
                 {
                     method: 'POST',
-                    headers: { "Content-Type": 'application/json' }, body: JSON.stringify({ UserName: username, Email: email, Password: password, ConfirmPassword: password })
-                }).then(response => {
-                    if (response.ok) {
-
-                    } else {
-                        alert(response.text())
-                    }
+                    headers: { "Content-Type": 'application/json' }, body: JSON.stringify({ Email: email, Password: password, ConfirmPassword: confirmPassword }),
                 })
             let textResponse = await response.text();
             console.log(textResponse);
+            setHasRegistered(true);
         } catch {
-            throw new Error('Problem with POST request')
+            throw new Error('Problem with request')
         }
     };
 
-    return (
+    let registerMarkup = (
         <div>
             <h2>Sign up for Hydrosim</h2>
             <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="username">Username:</label>
-                    <input type="text" id="username" value={username} onChange={handleUsernameChange} />
-                </div>
                 <div>
                     <label htmlFor="email">Email:</label>
                     <input type="email" id="email" value={email} onChange={handleEmailChange} />
@@ -82,9 +84,19 @@ function Register({ totals, firstChild, secondChild }) {
                     <label htmlFor="password">Password:</label>
                     <input type="password" id="password" value={password} onChange={handlePasswordChange} />
                 </div>
+                <div>
+                    <label htmlFor="confirmPassword">Confirm Password:</label>
+                    <input type="password" id="confirmPassword" value={confirmPassword} onChange={handleConfirmPasswordChange} />
+                </div>
                 <button type="submit">Register Account</button>
             </form>
-        </div>
+        </div>)
+
+
+    return (
+        <>
+          {hasRegistered ? <Login></Login> : registerMarkup}
+        </>    
     );
 }
 

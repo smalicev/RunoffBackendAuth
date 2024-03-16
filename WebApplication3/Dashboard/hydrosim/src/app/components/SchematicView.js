@@ -17,14 +17,13 @@ import ContextMenu from "./ContextMenu";
 import StormIcon from "./StormIcon"
 import CatchmentIcon from "./CatchmentIcon"
 import Hoverable from "./Hoverable"
+import Hydrograph from "../hydrograph.mjs";
 
 Chart.register(LinearScale);
 Chart.register(CategoryScale);
 
-function SchematicView ( ) {
+function SchematicView( { Id, Hydrographs } ) {
 
-
-  const hydrographs = ['0']
   const [catchments, setCatchments] = useState(0);
   const [storms, setStorms] = useState(0);
   const [parent, setParent] = useState(null);
@@ -34,22 +33,36 @@ function SchematicView ( ) {
   const [currentHydrograph, setCurrentHydrograph] = useState(null)
   const [contextMenuOn, setContextMenu] = useState(false)
   const [context, setCurrentContext] = useState(false)
-  const [mousePosition, setMousePosition] = useState({x:null, y:null})
-
+  const [mousePosition, setMousePosition] = useState({ x: null, y: null })
+  const [hydrographs, setHydrographs] = useState(null);
 
 
   useEffect(() => {
-    const savedStorm = localStorage.getItem('currentStorm');
-    const savedCatchment = localStorage.getItem('currentCatchment');
-    console.log(savedStorm)
-    if (savedStorm) {
-      setCurrentStorm(JSON.parse(savedStorm))
-    }
+      async function submitHydrograph(hydrograph) {
+          let hydrographSubmission = await fetch('/api/hydrographs/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(hydrograph) })
+      }
 
-    if (savedCatchment) {
-      setCurrentCatchment(JSON.parse(savedCatchment))
-    }
-  }, [])
+      async function getHydrograph() {
+          let userHydrographs = await fetch(`/api/hydrographs?userId=${encodeURIComponent(Id)}`, { method: 'GET' });
+          let userHydrographsObj = await userHydrographs.json();
+          setHydrographs(userHydrographsObj)
+      }
+
+      if (currentCatchment !== null && currentStorm !== null) {
+          let hydrograph = new Hydrograph(0, currentStorm, currentCatchment);
+          let submissionHydrograph = { Time: hydrograph.finalRunoffTimeSeries.toString(), Value: hydrograph.finalRunoffIncremental.toString(), userId: Id }
+          setCurrentHydrograph(hydrograph)
+
+          try {
+              submitHydrograph(submissionHydrograph);
+          } catch(e) {
+              console.error('error:', e)
+          }
+
+          getHydrograph();
+      }
+
+  }, [currentCatchment,currentStorm])
 
 
   const inputsRef = useRef({});
@@ -122,16 +135,11 @@ function SchematicView ( ) {
 
   }
 
-  function pullHydrograph(containerHydrograph) {
-    setCurrentHydrograph(containerHydrograph)
-  }
-
   function handleAddCatchment() {
     let id = catchments;
     setCatchments(catchments + 1);
     let newCatchment = new Catchment(id, 'Default Catchment')
     setCurrentCatchment(newCatchment);
-    localStorage.setItem('currentCatchment', JSON.stringify(newCatchment))
   } 
   
   async function handleAddStorm() {
@@ -139,18 +147,6 @@ function SchematicView ( ) {
     setStorms(storms + 1);
     let newStorm = new Storm(id, 'Default Storm')
     setCurrentStorm(newStorm);
-    localStorage.setItem('currentStorm', JSON.stringify(newStorm))
-      try {
-          let response = await fetch('api/Users',
-              {
-                  method: 'POST',
-                  headers: { "Content-Type": 'application/json' }, body: JSON.stringify({ name: 'jasonTEst', password: 'testpassword' })
-              })
-          let textResponse = await response.text();
-          console.log(textResponse);
-      } catch {
-          throw new Error('Problem with POST request')
-      }
   }
 
   function handleEditSubmission() {
@@ -253,13 +249,14 @@ function SchematicView ( ) {
 return ( 
     <DndContext  id="1" onDragEnd={handleDragEnd} onDragStart={handleDragStart} >
       <div style = {schematicViewStyle} onClick={handleOnClick}>
-        <Sidebar  totals={[{'catchments': catchments}, {'storms': storms}]} firstChild={draggableCatchmentMarkup} secondChild={draggableStormMarkup}>
+            <Sidebar totals={[{ 'catchments': catchments }, { 'storms': storms }]} firstChild={draggableCatchmentMarkup} secondChild={draggableStormMarkup} Hydrographs={hydrographs ? hydrographs : Hydrographs ? Hydrographs : []}>
         </Sidebar>
         <div  onContextMenu={handleContextMenu}>
-          <Droppable func={pullHydrograph} 
+          <Droppable 
             currentStorm={currentStorm} 
             currentCatchment={currentCatchment} 
-            draggableCurrentStorm={ currentStorm ? 
+                    draggableCurrentStorm=
+                    {currentStorm ? 
                                                 <Hoverable style= { {borderRadius: '10%', boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',}}> 
                                                   <Draggable 
                                                     data-type='storm'
@@ -271,7 +268,8 @@ return (
                                                   </Draggable>
                                                 </Hoverable> : null} 
             id={'0'} 
-            draggableCurrentCatchment={ currentCatchment ? 
+                    draggableCurrentCatchment=
+                    {currentCatchment ? 
                                                 <Hoverable style= { {borderRadius: '10%', boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',}}> 
                                                   <Draggable
                                                     data-type='catchment'

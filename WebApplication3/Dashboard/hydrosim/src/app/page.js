@@ -4,29 +4,42 @@ import Chart from "chart.js/auto";
 import styles from "./page.module.css";
 import Sidebar from "./components/Sidebar.js";
 import SchematicView from "./components/SchematicView.js"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Register from "./components/Register"
-
+import Login from "./components/Login"
 
 export default function Home() {
-    const [loggedIn, setLogggedIn] = useState(false);
-  const schematicView = true;
+    const [hasToken, setHasToken] = useState(false);
+    const [userObject, setUserObject] = useState(null);
+    const [authResponse, setAuthResponse] = useState(null);
+    const [hydrographs, setHydrographs] = useState(null);
 
-  const schematicViewMarkup = (<SchematicView></SchematicView>)
+    const handleHasToken = async () => {
+        let token = localStorage.getItem('access_token');
+        setHasToken(true)
 
-  const regularMarkup = (<>
-      <div className="display">
-          <Register>
-          </Register>
-    </div>
-    </>
-    )
+        if (token !== null) {
+            let identity = await fetch('/api/Account/UserInfo', { method: 'GET', headers: { Authorization: `Bearer ${token}` } });
+            let Authresponse = await identity.json();
+            setAuthResponse(Authresponse);
+            let userHydrographs = await fetch(`/api/hydrographs?userId=${encodeURIComponent(Authresponse.Id)}`, { method: 'GET' });
+            let userHydrographsObj = await userHydrographs.json();
+            setHydrographs(userHydrographsObj)
+        }
 
-  
-  
+    }
+
+    // The empty array argument makes it only check on mount, not rerender
+    useEffect(() => {
+        handleHasToken();
+    }, [])
+
   return (
-    <main className={styles.main}>
-        {loggedIn ? schematicViewMarkup : regularMarkup}
+      <main className={styles.main}>
+          {hasToken ?
+            authResponse ? 
+                  <SchematicView Id={authResponse.Id} Hydrographs={hydrographs}></SchematicView> : <SchematicView></SchematicView>
+              : <Login></Login>}
     </main>
 
     

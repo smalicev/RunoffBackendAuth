@@ -9,26 +9,12 @@ export function Droppable(props) {
   const {isOver, setNodeRef} = useDroppable({
     id: props.id,
   });
-  const [currentHydrograph, setCurrentHydrograph] = useState (null)
 
   let currentStorm = props.currentStorm;
   let currentCatchment = props.currentCatchment;
   let draggableCurrentStorm = props.draggableCurrentStorm;
   let draggableCurrentCatchment = props.draggableCurrentCatchment;
 
-  const calcHydrograph = useMemo(() => setCurrentHydrographAndCalculate(), [currentStorm, currentCatchment]);
-  
-
-  function setCurrentHydrographAndCalculate() {
-    if (currentStorm === null || currentCatchment === null) {
-      return
-    } else {
-      setCurrentHydrograph(new Hydrograph(0,currentStorm, currentCatchment));
-    }
-  }
-
-  const pushHydrograph = useMemo(() => props.func(currentHydrograph), [currentHydrograph])
-  
   const style = {
     border: isOver ? '0.25rem solid rgba(0, 0, 0, .05)' : undefined,
     backgroundColor: isOver ? 'rgba(0, 0, 0, .3)' : undefined,

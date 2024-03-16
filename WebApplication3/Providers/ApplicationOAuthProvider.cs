@@ -31,11 +31,13 @@ namespace WebApplication3.Providers
         {
             var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
 
-            ApplicationUser user = await userManager.FindAsync(context.UserName, context.Password);
+            ApplicationUser user = await userManager.FindByEmailAsync(context.UserName);
 
-            if (user == null)
+            if (user == null || !(await userManager.CheckPasswordAsync(user, context.Password)))
             {
-                context.SetError("invalid_grant", "The user name or password is incorrect.");
+                var name = context.UserName;
+                var pass = context.Password;
+                context.SetError("invalid_grant", $"The user name or password is incorrect. {name} {pass}");
                 return;
             }
 

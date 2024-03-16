@@ -1,8 +1,10 @@
 import React from "react";
 import Hoverable from "./Hoverable"
+import HydrographList from "./HydrographList"
+import Hydrograph from "../hydrograph.mjs";
 
 
-function Sidebar ( { totals, firstChild, secondChild } ) {
+function Sidebar ( { totals, firstChild, secondChild, Hydrographs } ) {
 
   const style = {
                   display: 'flex',
@@ -57,11 +59,11 @@ return (
 
       <h4>Tools</h4>
       <div style={toolStyle}>
-        
       {firstChild ? firstChild : null}
       {secondChild ? secondChild : null}
-      </div>
-        
+            </div>
+      <h4>Previous Hydrographs</h4>
+            <HydrographList Hydrographs={Hydrographs}></HydrographList>
 
         
       

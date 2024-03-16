@@ -61,6 +61,7 @@ namespace WebApplication3.Controllers
             return new UserInfoViewModel
             {
                 Email = User.Identity.GetUserName(),
+                Id = User.Identity.GetUserId(),
                 HasRegistered = externalLogin == null,
                 LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
             };
