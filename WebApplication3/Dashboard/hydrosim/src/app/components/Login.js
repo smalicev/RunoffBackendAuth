@@ -11,17 +11,10 @@ function Login() {
         display: 'flex',
         flexDirection: 'column',
         rowGap: '1rem',
-        justifyContent: 'flex-start',
-        height: '100vh',
-        backgroundColor: 'var(--main-bg-color)',
+        justifyContent: 'center',
+        backgroundColor: 'white',
         padding: '2rem',
         boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',
-        ul: {
-            display: 'flex',
-            flexDirection: 'column',
-            listStyleType: 'none',
-            rowGap: '1rem',
-        },
     }
 
     const handleEmailChange = (e) => {
@@ -57,7 +50,7 @@ function Login() {
     const LoginMarkup = (
             <>
                 <h2>Sign up for Hydrosim</h2>
-                    <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} style={style}>
                         <div>
                             <label htmlFor="email">Email:</label>
                             <input type="email" id="email" value={email} onChange={handleEmailChange} />
@@ -68,7 +61,7 @@ function Login() {
                         </div>
                         <button type="submit">Log in</button>
                     </form>
-                <h2>Don&apost have an account?
+            <h2>Don&apos;t have an account?
                     <a onClick={handleRegistering}>Sign up here.</a>
                 </h2>
             </>    )

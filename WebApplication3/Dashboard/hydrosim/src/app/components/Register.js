@@ -89,6 +89,7 @@ function Register({ totals, firstChild, secondChild }) {
                     <input type="password" id="confirmPassword" value={confirmPassword} onChange={handleConfirmPasswordChange} />
                 </div>
                 <button type="submit">Register Account</button>
+                <span onClick={() => { setHasRegistered(true)}}>Have an account already? Click here to sign in.</span>
             </form>
         </div>)
 

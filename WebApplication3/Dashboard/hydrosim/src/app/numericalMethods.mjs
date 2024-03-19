@@ -1,10 +1,22 @@
 
 
+function paginate(list) {
+    const SUBLISTLENGTH = 5;
+    let totalArray = [];
 
-function calculateAverage(array) { 
-  const sum = array.reduce((acc, curr) => acc + curr, 0); 
-  const average = sum / array.length; 
-  return average; 
+    if (list.length > SUBLISTLENGTH) {
+
+        for (let j = 1; j <= (list.length / SUBLISTLENGTH); j++) {
+            totalArray.push([])
+
+            for (let i = 0; i < SUBLISTLENGTH; i++) {
+                totalArray[j - 1].push(list[i * j])
+            }
+        }
+    } else {
+        return [list];
+    }
+    return totalArray;
 }
 
 function incrementCumulative(cumulativeArray) {
@@ -17,6 +29,12 @@ function incrementCumulative(cumulativeArray) {
   incrementalArray.push(cumulativeArray[0])
 
   return incrementalArray.reverse();
+}
+
+function calculateAverage(array) {
+    const sum = array.reduce((acc, curr) => acc + curr, 0);
+    const average = sum / array.length;
+    return average;
 }
 
 function cumulate(incrementalArray) {
@@ -56,4 +74,4 @@ function addAllLikeProperties(arrayOfObjects) {
 }
 
 
-export { cumulate, incrementCumulative, calculateAverage, addAllLikeProperties }
+export { cumulate, incrementCumulative, calculateAverage, addAllLikeProperties, paginate }

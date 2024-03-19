@@ -6,7 +6,8 @@ import Sidebar from "./components/Sidebar.js";
 import SchematicView from "./components/SchematicView.js"
 import { useState, useEffect } from "react";
 import Register from "./components/Register"
-import Login from "./components/Login"
+import Login from "./components/Login";
+import { LineWave } from "react-loader-spinner";
 
 export default function Home() {
     const [hasToken, setHasToken] = useState(false);
@@ -16,7 +17,11 @@ export default function Home() {
 
     const handleHasToken = async () => {
         let token = localStorage.getItem('access_token');
-        setHasToken(true)
+
+        if (token) {
+            setHasToken(true)
+        }
+        
 
         if (token !== null) {
             let identity = await fetch('/api/Account/UserInfo', { method: 'GET', headers: { Authorization: `Bearer ${token}` } });
@@ -24,7 +29,7 @@ export default function Home() {
             setAuthResponse(Authresponse);
             let userHydrographs = await fetch(`/api/hydrographs?userId=${encodeURIComponent(Authresponse.Id)}`, { method: 'GET' });
             let userHydrographsObj = await userHydrographs.json();
-            setHydrographs(userHydrographsObj)
+            setHydrographs(userHydrographsObj);
         }
 
     }
@@ -37,8 +42,9 @@ export default function Home() {
   return (
       <main className={styles.main}>
           {hasToken ?
-            authResponse ? 
-                  <SchematicView Id={authResponse.Id} Hydrographs={hydrographs}></SchematicView> : <SchematicView></SchematicView>
+              authResponse ?
+                hydrographs ? 
+                  <SchematicView Id={authResponse.Id} Hydrographs={hydrographs}></SchematicView> : <LineWave></LineWave> : <SchematicView></SchematicView>
               : <Login></Login>}
     </main>
 

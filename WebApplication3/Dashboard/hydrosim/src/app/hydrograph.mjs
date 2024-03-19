@@ -8,8 +8,8 @@ class Hydrograph {
     this.catchment = catchment;
     this.kinematicWaveK = this.calcKinematicWaveK()
     this.effectiveRunoff = incrementCumulative(this.scsLosses(this.storm.cumulativePrecipitation));
-    this.finalRunoffIncremental = null;
-    this.finalRunoffTimeSeries = null;
+    this.Value = null;
+    this.Time = null;
     this.convolutions = this.convolute(this.linearIUH());
     this.name = `${storm.name} on ${catchment.name}`
     this.generateTimeSeriesandIncRunoff();
@@ -101,12 +101,12 @@ prePeakFlowFunc: (peakFlow) => (this.storm.timeStep/this.storm.timeStep * (peakF
   }
 
   generateTimeSeriesandIncRunoff() {
-    this.finalRunoffTimeSeries = [0];
-    this.finalRunoffIncremental = [0];
+    this.Time = [0];
+    this.Value = [0];
 
     for (const property in this.convolutions) {
-      this.finalRunoffTimeSeries.push(property);
-      this.finalRunoffIncremental.push(((this.convolutions[property] / 100) * this.catchment.areaHectares*10000) / (this.storm.timeStep * 60))
+      this.Time.push(property);
+      this.Value.push(((this.convolutions[property] / 100) * this.catchment.areaHectares*10000) / (this.storm.timeStep * 60))
     }
   }
 

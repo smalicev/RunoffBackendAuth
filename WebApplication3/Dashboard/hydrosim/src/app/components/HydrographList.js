@@ -1,8 +1,12 @@
 ﻿import React from "react";
 import Hoverable from "./Hoverable"
+import { Accordion, AccordionItem } from '@szhsin/react-accordion';
+import Hydrograph from "../hydrograph.mjs";
+import { useState } from "react"
+import { LineWave } from "react-loader-spinner"
 
-
-function HydrographList( { Hydrographs } ) {
+function HydrographList({ Hydrographs, paginatedHydrographs, accordionClick }) {
+    const [ currentPage, setCurrentPage ] = useState(1);
 
     const style = {
         display: 'flex',
@@ -22,6 +26,11 @@ function HydrographList( { Hydrographs } ) {
 
     }
 
+    function handlePageClick(e) {
+        setCurrentPage(e.target.id)
+        console.log(paginatedHydrographs)
+    }
+
     const toolStyle = {
         display: 'flex',
         flexDirection: 'row',
@@ -31,17 +40,32 @@ function HydrographList( { Hydrographs } ) {
         borderTop: '2px solid rgba(92, 92, 92, 0.404)',
     }
 
+    let pageToIndexNum = currentPage ? currentPage - 1 : 0;
 
     return (
-        <div onClick={() => {
-            console.log(Hydrographs)
-        }}>
-        <p>List is</p>
-            {Hydrographs.map((graph) => {
-                
-                return <span key={graph.Value}>{graph.Value}</span>
-        })}
-        </div>
+        <> 
+            {(Hydrographs && paginatedHydrographs) ?
+                <>
+                <Accordion key={pageToIndexNum}>
+                {paginatedHydrographs[pageToIndexNum].map((graph) => {
+                    return <AccordionItem onClick={ accordionClick } key={graph.Id} header={graph.DateInserted}>
+                             <span>{graph.CatchmentName} with {graph.StormName}</span>
+                            </AccordionItem>
+                           
+                    })
+                }
+              </Accordion>
+
+            <div>
+                {paginatedHydrographs.map((page, idx) => {
+                    return (
+                        <button onClick={handlePageClick} key={idx} id={ idx + 1 }>{idx +1}</button>
+                )
+                })}
+            </div> </> : <LineWave></LineWave> }
+
+        
+        </>
     );
 }
 

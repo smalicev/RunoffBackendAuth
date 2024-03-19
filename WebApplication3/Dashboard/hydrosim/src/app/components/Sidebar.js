@@ -4,7 +4,7 @@ import HydrographList from "./HydrographList"
 import Hydrograph from "../hydrograph.mjs";
 
 
-function Sidebar ( { totals, firstChild, secondChild, Hydrographs } ) {
+function Sidebar ( { totals, firstChild, secondChild, Hydrographs, paginatedHydrographs, accordionClick } ) {
 
   const style = {
                   display: 'flex',
@@ -63,7 +63,7 @@ return (
       {secondChild ? secondChild : null}
             </div>
       <h4>Previous Hydrographs</h4>
-            <HydrographList Hydrographs={Hydrographs}></HydrographList>
+            <HydrographList accordionClick={accordionClick} paginatedHydrographs={paginatedHydrographs ? paginatedHydrographs: null} Hydrographs={Hydrographs}></HydrographList>
 
         
       

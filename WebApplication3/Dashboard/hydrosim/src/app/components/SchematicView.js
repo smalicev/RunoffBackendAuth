@@ -18,11 +18,12 @@ import StormIcon from "./StormIcon"
 import CatchmentIcon from "./CatchmentIcon"
 import Hoverable from "./Hoverable"
 import Hydrograph from "../hydrograph.mjs";
+import { paginate } from "../numericalMethods.mjs"
 
 Chart.register(LinearScale);
 Chart.register(CategoryScale);
 
-function SchematicView( { Id, Hydrographs } ) {
+function SchematicView( { Id, Hydrographs} ) {
 
   const [catchments, setCatchments] = useState(0);
   const [storms, setStorms] = useState(0);
@@ -34,23 +35,25 @@ function SchematicView( { Id, Hydrographs } ) {
   const [contextMenuOn, setContextMenu] = useState(false)
   const [context, setCurrentContext] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: null, y: null })
-  const [hydrographs, setHydrographs] = useState(null);
+  const [hydrographs, setHydrographs] = useState(Hydrographs);
+  const [paginatedHydrographs, setPaginatedHydrographs] = useState(null);
 
+    useEffect(() => {
+
+        if (hydrographs !== null && hydrographs !== undefined) {
+            setPaginatedHydrographs(paginate(hydrographs))
+        }
+
+    }, [hydrographs])
 
   useEffect(() => {
       async function submitHydrograph(hydrograph) {
           let hydrographSubmission = await fetch('/api/hydrographs/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(hydrograph) })
       }
 
-      async function getHydrograph() {
-          let userHydrographs = await fetch(`/api/hydrographs?userId=${encodeURIComponent(Id)}`, { method: 'GET' });
-          let userHydrographsObj = await userHydrographs.json();
-          setHydrographs(userHydrographsObj)
-      }
-
       if (currentCatchment !== null && currentStorm !== null) {
           let hydrograph = new Hydrograph(0, currentStorm, currentCatchment);
-          let submissionHydrograph = { Time: hydrograph.finalRunoffTimeSeries.toString(), Value: hydrograph.finalRunoffIncremental.toString(), userId: Id }
+          let submissionHydrograph = { Time: hydrograph.Time.toString(), Value: hydrograph.Value.toString(), userId: Id, StormName: currentStorm.name.toString(), CatchmentName: currentCatchment.name.toString()}
           setCurrentHydrograph(hydrograph)
 
           try {
@@ -59,10 +62,19 @@ function SchematicView( { Id, Hydrographs } ) {
               console.error('error:', e)
           }
 
-          getHydrograph();
+          getHydrographs();
       }
 
-  }, [currentCatchment,currentStorm])
+  }, [currentCatchment, currentStorm])
+
+
+    async function getHydrographs() {
+        let userHydrographs = await fetch(`/api/hydrographs?userId=${encodeURIComponent(Id)}`, { method: 'GET' });
+        let userHydrographsObj = await userHydrographs.json();
+        console.log(userHydrographsObj)
+        setHydrographs(userHydrographsObj);
+
+    }
 
 
   const inputsRef = useRef({});
@@ -115,10 +127,23 @@ function SchematicView( { Id, Hydrographs } ) {
     </Draggable>
   );
 
+    function handleHydrographClick(e) {
+        console.log(hydrographs[0])
+        setCurrentHydrograph(hydrographs[0])
+    }
+
+    function normalizeHydrographProperties(databaseHydrographObject) {
+        let HydrographObject = { finalRunoffTimeSeries: databaseHydrographObject.time.split(','), finalRunoffIncremental: databaseHydrographObject.Value.split(',') }
+        //////////////////////////// STILL NEED TO NORMALIZE GETTED HYDROGRAPH SO ITS AN ARRAY NOT A STRING...
+        return HydrographObject;
+    }
+
+
   function handleContextMenu(event) {
     event.preventDefault();
     setEditing(false);
-    console.log(event.target.dataset.type)
+      console.log(event.target.dataset.type)
+    
     setContextMenu(false);
     const {over} = event;
 
@@ -180,7 +205,8 @@ function SchematicView( { Id, Hydrographs } ) {
     if (event.target.className !== 'contextMenu' && contextMenuOn) {
       setContextMenu(false)
     }
-    console.log(event.target.className)
+      console.log(event.target.className)
+      console.log(event.target.value)
     if (event.target.className === 'contextMenu edit') {
       setEditing(false)
       setEditing(true)
@@ -223,13 +249,15 @@ function SchematicView( { Id, Hydrographs } ) {
 
 
   const LineData = currentHydrograph ?  {
-    labels: currentHydrograph.finalRunoffTimeSeries,
+    labels: typeof currentHydrograph.Time === 'string' ? currentHydrograph.Time.split(',') : currentHydrograph.Time,
     datasets: [ 
       { label: 'Runoff Curve',
-    data: currentHydrograph.finalRunoffIncremental}
+            data: typeof currentHydrograph.Value === 'string' ? currentHydrograph.Value.split(',') : currentHydrograph.Value
+}
     ]
   } : null;
 
+  /*
   const PieData = currentHydrograph ? {
     labels: [
       `Runoff (m\u00B3)`,
@@ -246,10 +274,14 @@ function SchematicView( { Id, Hydrographs } ) {
     }]
   } : null;
 
+  {currentHydrograph ? <PieChart chartData={PieData} header={currentHydrograph.name} /> : null}
+
+  */
+
 return ( 
     <DndContext  id="1" onDragEnd={handleDragEnd} onDragStart={handleDragStart} >
       <div style = {schematicViewStyle} onClick={handleOnClick}>
-            <Sidebar totals={[{ 'catchments': catchments }, { 'storms': storms }]} firstChild={draggableCatchmentMarkup} secondChild={draggableStormMarkup} Hydrographs={hydrographs ? hydrographs : Hydrographs ? Hydrographs : []}>
+            <Sidebar accordionClick={handleHydrographClick} paginatedHydrographs={paginatedHydrographs ? paginatedHydrographs : null} totals={[{ 'catchments': catchments }, { 'storms': storms }]} firstChild={draggableCatchmentMarkup} secondChild={draggableStormMarkup} Hydrographs={hydrographs ? hydrographs : Hydrographs ? Hydrographs : []}>
         </Sidebar>
         <div  onContextMenu={handleContextMenu}>
           <Droppable 
@@ -287,8 +319,7 @@ return (
           {contextMenuOn ? <ContextMenu contextObject={context} mousePosition={mousePosition}></ContextMenu>: null}
         </div>
         <div style={tabStyle} >
-          {currentHydrograph ? <LineChart chartData={LineData} header={currentHydrograph.name} /> : <h4>Add a catchment and storm to get started. <br /> <br /></h4>}
-          {currentHydrograph ? <PieChart chartData={PieData} header={currentHydrograph.name} /> : null}
+                {currentHydrograph ? <LineChart chartData={LineData} header={currentHydrograph.name ? currentHydrograph.name : `${curre}` } /> : <h4>Add a catchment and storm to get started. <br /> <br /></h4>}
           {editingModeOn ? <EditMenu editSubmission={handleEditSubmission} editingObject={context}></EditMenu> : null}
           
         </div>
