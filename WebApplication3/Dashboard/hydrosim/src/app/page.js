@@ -43,8 +43,8 @@ export default function Home() {
       <main className={styles.main}>
           {hasToken ?
               authResponse ?
-                hydrographs ? 
-                  <SchematicView Id={authResponse.Id} Hydrographs={hydrographs}></SchematicView> : <LineWave></LineWave> : <SchematicView></SchematicView>
+                  hydrographs ?
+                      <SchematicView Id={authResponse.Id} Hydrographs={hydrographs}></SchematicView> : <LineWave wrapperStyle={{ margin: 'auto', left: '35%', top: '35%'}} height='400' width='400'></LineWave> : <SchematicView></SchematicView>
               : <Login></Login>}
     </main>
 

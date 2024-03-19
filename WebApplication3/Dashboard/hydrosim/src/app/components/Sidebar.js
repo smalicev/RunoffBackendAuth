@@ -33,15 +33,6 @@ function Sidebar ( { totals, firstChild, secondChild, Hydrographs, paginatedHydr
                     }
 
 
-  /*{totals.map( totalObject => {
-    let key = Object.keys(totalObject)[0]
-    return (<div key ={key}>
-              total number of {key}: { totalObject[key] };
-            </div>)
-  })}
-  */
-
-
 return ( 
   <div>
     <nav style={style}>
@@ -50,10 +41,10 @@ return (
       </div>
       <ul style={style.ul}>
         <Hoverable>
-          <h3>Schematic View</h3>
+          <h3>Schematic View (current view)</h3>
         </Hoverable>
         <Hoverable>
-          <h3>Documentation</h3>
+          <h3>Documentation (WIP - static page)</h3>
         </Hoverable>
       </ul>
 

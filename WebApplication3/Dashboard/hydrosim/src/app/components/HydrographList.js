@@ -26,6 +26,20 @@ function HydrographList({ Hydrographs, paginatedHydrographs, accordionClick }) {
 
     }
 
+    const pageButtonStyle = {
+        width: '1rem',
+        hegiht: '1rem',
+        border: '0.25rem solid black',
+        borderRadius: '0.25rem'
+    }
+
+    const accordionItemStyle = {
+        width: '8rem',
+        height: '1.5rem',
+        border: '0.25rem solid black',
+        borderRadius: '0.5rem'
+    }
+
     function handlePageClick(e) {
         setCurrentPage(e.target.id)
         console.log(paginatedHydrographs)
@@ -47,8 +61,8 @@ function HydrographList({ Hydrographs, paginatedHydrographs, accordionClick }) {
             {(Hydrographs && paginatedHydrographs) ?
                 <>
                 <Accordion key={pageToIndexNum}>
-                {paginatedHydrographs[pageToIndexNum].map((graph) => {
-                    return <AccordionItem onClick={ accordionClick } key={graph.Id} header={graph.DateInserted}>
+                {paginatedHydrographs[pageToIndexNum].map((graph, idx) => {
+                    return <AccordionItem onClick={() => accordionClick(graph.Id)} id={ graph.Id } key={graph.Id} header={graph.DateInserted ? graph.DateInserted : 'No Date'}>
                              <span>{graph.CatchmentName} with {graph.StormName}</span>
                             </AccordionItem>
                            
@@ -59,7 +73,7 @@ function HydrographList({ Hydrographs, paginatedHydrographs, accordionClick }) {
             <div>
                 {paginatedHydrographs.map((page, idx) => {
                     return (
-                        <button onClick={handlePageClick} key={idx} id={ idx + 1 }>{idx +1}</button>
+                        <button style={pageButtonStyle} onClick={handlePageClick} key={idx} id={ idx + 1 }>{idx +1}</button>
                 )
                 })}
             </div> </> : <LineWave></LineWave> }

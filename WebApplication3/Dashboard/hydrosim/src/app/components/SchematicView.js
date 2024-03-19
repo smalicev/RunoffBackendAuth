@@ -36,16 +36,33 @@ function SchematicView( { Id, Hydrographs} ) {
   const [context, setCurrentContext] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: null, y: null })
   const [hydrographs, setHydrographs] = useState(Hydrographs);
-  const [paginatedHydrographs, setPaginatedHydrographs] = useState(null);
+    const [paginatedHydrographs, setPaginatedHydrographs] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [hydrgraphRefTable, setHydrographRefTable] = useState(null);
 
+
+    function hydrographsToRefObject(hydrographs) {
+        let refObject = {};
+
+        hydrographs.forEach((hydrographObject) => {
+            refObject[hydrographObject.Id] = hydrographObject;
+        })
+        console.log(refObject)
+        return refObject;
+    }
+
+    // for first page load
     useEffect(() => {
 
         if (hydrographs !== null && hydrographs !== undefined) {
             setPaginatedHydrographs(paginate(hydrographs))
+            setHydrographRefTable(hydrographsToRefObject(hydrographs))
         }
 
     }, [hydrographs])
 
+
+    //for updates 
   useEffect(() => {
       async function submitHydrograph(hydrograph) {
           let hydrographSubmission = await fetch('/api/hydrographs/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(hydrograph) })
@@ -53,7 +70,7 @@ function SchematicView( { Id, Hydrographs} ) {
 
       if (currentCatchment !== null && currentStorm !== null) {
           let hydrograph = new Hydrograph(0, currentStorm, currentCatchment);
-          let submissionHydrograph = { Time: hydrograph.Time.toString(), Value: hydrograph.Value.toString(), userId: Id, StormName: currentStorm.name.toString(), CatchmentName: currentCatchment.name.toString()}
+          let submissionHydrograph = { Time: hydrograph.Time.toString(), Value: hydrograph.Value.toString(), userId: Id, StormName: currentStorm.name.toString(), CatchmentName: currentCatchment.name.toString(), DateInserted: (new Date()).toISOString().split('T')[0] }
           setCurrentHydrograph(hydrograph)
 
           try {
@@ -76,7 +93,8 @@ function SchematicView( { Id, Hydrographs} ) {
 
     }
 
-
+    // grab form inputs without setting states for every single field
+    // useRef to store values
   const inputsRef = useRef({});
 
   const tabStyle = {
@@ -127,17 +145,14 @@ function SchematicView( { Id, Hydrographs} ) {
     </Draggable>
   );
 
-    function handleHydrographClick(e) {
-        console.log(hydrographs[0])
-        setCurrentHydrograph(hydrographs[0])
-    }
+    function handleHydrographClick(hydrographId) {
+        console.log(hydrographId)
+        console.log(hydrgraphRefTable[hydrographId])
 
-    function normalizeHydrographProperties(databaseHydrographObject) {
-        let HydrographObject = { finalRunoffTimeSeries: databaseHydrographObject.time.split(','), finalRunoffIncremental: databaseHydrographObject.Value.split(',') }
-        //////////////////////////// STILL NEED TO NORMALIZE GETTED HYDROGRAPH SO ITS AN ARRAY NOT A STRING...
-        return HydrographObject;
-    }
+        let selectedHydrograph = hydrgraphRefTable[hydrographId];
 
+        setCurrentHydrograph(selectedHydrograph)
+    }
 
   function handleContextMenu(event) {
     event.preventDefault();
@@ -281,7 +296,11 @@ function SchematicView( { Id, Hydrographs} ) {
 return ( 
     <DndContext  id="1" onDragEnd={handleDragEnd} onDragStart={handleDragStart} >
       <div style = {schematicViewStyle} onClick={handleOnClick}>
-            <Sidebar accordionClick={handleHydrographClick} paginatedHydrographs={paginatedHydrographs ? paginatedHydrographs : null} totals={[{ 'catchments': catchments }, { 'storms': storms }]} firstChild={draggableCatchmentMarkup} secondChild={draggableStormMarkup} Hydrographs={hydrographs ? hydrographs : Hydrographs ? Hydrographs : []}>
+            <Sidebar accordionClick={handleHydrographClick} paginatedHydrographs={paginatedHydrographs ? paginatedHydrographs : null}
+                totals={[{ 'catchments': catchments }, { 'storms': storms }]}
+                firstChild={draggableCatchmentMarkup}
+                secondChild={draggableStormMarkup}
+                Hydrographs={hydrographs ? hydrographs : Hydrographs ? Hydrographs : []}>
         </Sidebar>
         <div  onContextMenu={handleContextMenu}>
           <Droppable 
@@ -319,7 +338,9 @@ return (
           {contextMenuOn ? <ContextMenu contextObject={context} mousePosition={mousePosition}></ContextMenu>: null}
         </div>
         <div style={tabStyle} >
-                {currentHydrograph ? <LineChart chartData={LineData} header={currentHydrograph.name ? currentHydrograph.name : `${curre}` } /> : <h4>Add a catchment and storm to get started. <br /> <br /></h4>}
+                {currentHydrograph ? <LineChart chartData={LineData}
+                    header={currentHydrograph.name ? currentHydrograph.name : `${currentHydrograph.StormName} on ${currentHydrograph.CatchmentName}`} />
+                    : <h4>Add a catchment and storm to get started. <br /> <br /></h4>}
           {editingModeOn ? <EditMenu editSubmission={handleEditSubmission} editingObject={context}></EditMenu> : null}
           
         </div>

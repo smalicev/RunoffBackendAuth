@@ -68,30 +68,7 @@ function Register({ totals, firstChild, secondChild }) {
         }
     };
 
-    let registerMarkup = (
-        <div>
-            <h2>Sign up for Hydrosim</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="email">Email:</label>
-                    <input type="email" id="email" value={email} onChange={handleEmailChange} />
-                </div>
-                <div>
-                    <label htmlFor="confirmEmail">Confirm Email:</label>
-                    <input type="email" id="confirmEmail" value={confirmEmail} onChange={handleConfirmEmailChange} />
-                </div>
-                <div>
-                    <label htmlFor="password">Password:</label>
-                    <input type="password" id="password" value={password} onChange={handlePasswordChange} />
-                </div>
-                <div>
-                    <label htmlFor="confirmPassword">Confirm Password:</label>
-                    <input type="password" id="confirmPassword" value={confirmPassword} onChange={handleConfirmPasswordChange} />
-                </div>
-                <button type="submit">Register Account</button>
-                <span onClick={() => { setHasRegistered(true)}}>Have an account already? Click here to sign in.</span>
-            </form>
-        </div>)
+
 
 
     return (

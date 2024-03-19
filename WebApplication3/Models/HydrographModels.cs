@@ -24,6 +24,7 @@ namespace WebApplication3.Models
         [MaxLength(48)]
         public string StormName { get; set; }
 
-        public DateTime? DateInserted { get; set; }
+        [MaxLength(30)]
+        public string DateInserted { get; set; }
     }
 }
