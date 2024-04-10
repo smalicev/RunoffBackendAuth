@@ -99,7 +99,7 @@ function SchematicView( { Id, Hydrographs} ) {
 
   const tabStyle = {
     backgroundColor: 'var(--main-bg-color)',
-    boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',
+    boxShadow: 'rgba(0, 0, 0, 0.25) 0px 28px 20px',
     height: '100vh',
     width: '20%',
     padding: '2rem',

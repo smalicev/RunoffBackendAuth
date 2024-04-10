@@ -2,23 +2,25 @@ import React from "react";
 import { useState } from "react";
 import Register from "./Register";
 import Hoverable from "./Hoverable";
-function Login() {
+function Login({ isRegistering, handleNotRegistering, handleRegistering }) {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmEmail, setConfirmEmail] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [isRegistering, setRegistering] = useState(false);
     const [hasRegistered, setHasRegistered] = useState(false);
+    const [passwordMatch, setPasswordMatch] = useState(false);
+    const [emailMatch, setEmailMatch] = useState(false);
 
     const loginStyle = {
         position: 'fixed',
         left: '50%',
         bottom: '50%',
-        transform: 'translate(-50%, -50%)',
+        transform: 'translate(-50%, 0%)',
         display: 'flex',
         flexDirection: 'column',
-        rowGap: '1rem'
+        rowGap: '1rem',
+        zIndex: '12'
     }
 
     const buttonStyle = {
@@ -60,9 +62,7 @@ function Login() {
         setConfirmEmail(e.target.value);
     };
 
-    const handleRegistering = () => {
-        setRegistering(true);
-    }
+
     function refreshPage() {
         window.location.reload();
     }
@@ -89,21 +89,35 @@ function Login() {
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        if (confirmEmail !== email) {
-            alert('Emails do not match!')
+
+        if (confirmEmail === email) {
+            setEmailMatch(true);
         }
 
-        try {
-            let response = await fetch('/api/Account/Register',
-                {
-                    method: 'POST',
-                    headers: { "Content-Type": 'application/json' }, body: JSON.stringify({ Email: email, Password: password, ConfirmPassword: confirmPassword }),
-                })
-            let textResponse = await response.text();
-            console.log(textResponse);
-            setRegistering(false);
-        } catch {
-            throw new Error('Problem with request')
+        if (confirmPassword === password) {
+            setPasswordMatch(true);
+        }
+
+        let passwordRegExp = new RegExp('(?=.*[^a-zA-Z0-9])(?=.*[A-Z]).+')
+
+        if (passwordRegExp.test(password) && emailMatch === true && passwordMatch === true) {
+
+            try {
+                let response = await fetch('/api/Account/Register',
+                    {
+                        method: 'POST',
+                        headers: { "Content-Type": 'application/json' }, body: JSON.stringify({ Email: email, Password: password, ConfirmPassword: confirmPassword }),
+                    })
+
+                let textResponse = await response.text();
+                console.log(textResponse);
+
+                if (textResponse.status === 200) {
+                    setHasRegistered(true);
+                }
+            } catch {
+                throw new Error('Problem with request')
+            }
         }
     };
 
@@ -150,7 +164,7 @@ function Login() {
                     <input style={{ width: '100%' }} type="password" id="confirmPassword" value={confirmPassword} onChange={handleConfirmPasswordChange} />
                 </div>
                 <button style={buttonStyle} type="submit">Register Account</button>
-                <span onClick={() => { setRegistering(false) }}>Have an account already?
+                <span onClick={handleNotRegistering }>Have an account already?
                     <a style={{ color: "blue", textDecoration: 'underline' }}> Click here to sign in. </a></span>
             </form>
         </div>)

@@ -9364,6 +9364,7 @@
     <Content Include="Dashboard\hydrosim\public\next.svg" />
     <Content Include="Dashboard\hydrosim\public\storm.svg" />
     <Content Include="Dashboard\hydrosim\public\vercel.svg" />
+    <Content Include="Dashboard\hydrosim\src\app\components\Header.js" />
     <Content Include="Dashboard\hydrosim\src\app\paginate.js" />
     <Content Include="Dashboard\hydrosim\src\app\catchment.mjs" />
     <Content Include="Dashboard\hydrosim\src\app\components\CatchmentIcon.js" />

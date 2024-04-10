@@ -8,12 +8,24 @@ import { useState, useEffect } from "react";
 import Register from "./components/Register"
 import Login from "./components/Login";
 import { LineWave } from "react-loader-spinner";
+import Header from "./components/Header";
 
 export default function Home() {
     const [hasToken, setHasToken] = useState(false);
     const [userObject, setUserObject] = useState(null);
     const [authResponse, setAuthResponse] = useState(null);
     const [hydrographs, setHydrographs] = useState(null);
+    const [isRegistering, setRegistering] = useState(false);
+
+    const mainStyle = {
+        display: 'flex',
+        flexDirection: 'column'
+    }
+
+    function loginButton() {
+        setHasToken(false);
+        setRegistering(false);
+    }
 
     const handleHasToken = async () => {
         let token = localStorage.getItem('access_token');
@@ -40,12 +52,18 @@ export default function Home() {
     }, [])
 
   return (
-      <main className={styles.main}>
+      <main className={styles.main} style={mainStyle}>
+          <Header loginState={authResponse ? true : false} loginButton={loginButton }></Header>
           {hasToken ?
               authResponse ?
-                  hydrographs ?
-                      <SchematicView Id={authResponse.Id} Hydrographs={hydrographs}></SchematicView> : <LineWave wrapperStyle={{ margin: 'auto', left: '35%', top: '35%'}} height='400' width='400'></LineWave> : <SchematicView></SchematicView>
-              : <Login></Login>}
+                  hydrographs ? <SchematicView Id={authResponse.Id} Hydrographs={hydrographs}></SchematicView> :
+                                <LineWave wrapperStyle={{ margin: 'auto', left: '35%', top: '35%' }} height='400' width='400'> </LineWave>
+                  : <SchematicView></SchematicView>
+              : <Login isRegistering={isRegistering} handleNotRegistering={() => {
+                  console.log('test');
+                  setRegistering(false)
+                  console.log(isRegistering)
+              }} handleRegistering={() => setRegistering(true)}></Login>}
     </main>
 
     

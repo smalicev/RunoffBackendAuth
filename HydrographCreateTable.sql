@@ -8,7 +8,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE TABLE [dbo].[Hydrographs] (
+CREATE TABLE [hydrosim].[Hydrographs] (
     [Id]     INT            IDENTITY (1, 1) NOT NULL,
     [Time]   NVARCHAR (MAX) NULL,
     [Value]  NVARCHAR (MAX) NULL,
