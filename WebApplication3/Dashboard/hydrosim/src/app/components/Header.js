@@ -2,8 +2,15 @@
 import swmShare from "../../../public/swmshare.svg"
 import Image from 'next/image'
 import Button from '@mui/material/Button';
+import Avatar from '@mui/material/Avatar';
+import Stack from '@mui/material/Stack';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ResponsiveAppBar from "./ResponsiveAppBar";
 
-function Header({ loginState, loginButton}) {
+function Header({ loginState, loginButton, accountViewButton, appViews, setView, appView}) {
+
 
     const headerStyle = {
         display: 'flex',
@@ -15,21 +22,15 @@ function Header({ loginState, loginButton}) {
 
     }
 
-    function handleLogout() {
-        localStorage.removeItem('access_token');
-    }
-
     return (
         <div style={headerStyle}>
-            <Image 
-                src={swmShare}
-                height={200}
-                width={200}
-                alt='the SwmShare Logo'
-                />
-            {loginState ? <Button variant="contained" onClick={handleLogout}>Logout</Button> : <Button variant="contained" onClick={loginButton}>Login</Button> }
+                <ResponsiveAppBar loginButton={loginButton} loginState={loginState} appButton={setView} pages={appViews} View={appView}  settings={['test']}></ResponsiveAppBar>
         </div>
     );
 }
 
 export { Header as default };
+
+
+
+

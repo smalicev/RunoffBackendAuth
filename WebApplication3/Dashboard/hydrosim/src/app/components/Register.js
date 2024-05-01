@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import SchematicView from "./SchematicView";
+import HydroSimView from "./HydroSimView";
 import Login from "./Login";
 
 function Register({ totals, firstChild, secondChild }) {

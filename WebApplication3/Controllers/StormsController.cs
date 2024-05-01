@@ -11,36 +11,36 @@ using WebApplication3.Models;
 
 namespace WebApplication3.Controllers
 {
-    public class HydrographsController : ApiController
+    public class StormsController : ApiController
 
     {
-        private HydrographDbContext db = new HydrographDbContext();
+        private StormDbContext db = new StormDbContext();
 
-        // GET api/hydrographs
-        public IEnumerable<Hydrograph> Get()
+        // GET api/Storms
+        public IEnumerable<Storm> Get()
         {
-            return db.Hydrographs.ToList();
+            return db.Storms.ToList();
         }
 
-        // GET api/hydrograph/5
+        // GET api/Storm/5
         public IHttpActionResult Get(int id)
         {
-            var hydrograph = db.Hydrographs.Find(id);
-            if (hydrograph == null)
+            var Storm = db.Storms.Find(id);
+            if (Storm == null)
             {
                 return NotFound();
             }
-            return Ok(hydrograph);
+            return Ok(Storm);
         }
 
-        // GET api/hydrographs?userId=123
-        public IEnumerable<Hydrograph> Get(string userId)
+        // GET api/Storms?userId=123
+        public IEnumerable<Storm> Get(string userId)
         {
-            return db.Hydrographs.Where(h => h.UserID == userId).ToList();
+            return db.Storms.Where(h => h.UserID == userId).ToList();
         }
 
-        // POST api/hydrographs
-        public IHttpActionResult Post([FromBody] Hydrograph hydrograph)
+        // POST api/Storms
+        public IHttpActionResult Post([FromBody] Storm Storm)
         {
             if (!ModelState.IsValid)
             {
@@ -49,7 +49,7 @@ namespace WebApplication3.Controllers
 
             try
             {
-                db.Hydrographs.Add(hydrograph);
+                db.Storms.Add(Storm);
                 db.SaveChanges();
             }
             catch (DbUpdateException ex)
@@ -57,7 +57,7 @@ namespace WebApplication3.Controllers
                 // Handle database-related exceptions
                 foreach (var entry in ex.Entries)
                 {
-                    if (entry.Entity is Hydrograph entity)
+                    if (entry.Entity is Storm entity)
                     {
                         var errorMessage = $"Error inserting entity of type {entity.GetType().Name}.";
                         // Log or handle the error as needed
@@ -65,23 +65,23 @@ namespace WebApplication3.Controllers
                 }
             }
 
-            return Ok(hydrograph);
+            return Ok(Storm);
         }
 
-        // PUT api/hydrographs/5
-        public IHttpActionResult Put(int id, [FromBody] Hydrograph hydrograph)
+        // PUT api/Storms/5
+        public IHttpActionResult Put(int id, [FromBody] Storm Storm)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != hydrograph.Id)
+            if (id != Storm.Id)
             {
                 return BadRequest();
             }
 
-            db.Entry(hydrograph).State = EntityState.Modified;
+            db.Entry(Storm).State = EntityState.Modified;
 
             try
             {
@@ -89,7 +89,7 @@ namespace WebApplication3.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!HydrographExists(id))
+                if (!StormExists(id))
                 {
                     return NotFound();
                 }
@@ -102,24 +102,24 @@ namespace WebApplication3.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // DELETE api/hydrographs/5
+        // DELETE api/Storms/5
         public IHttpActionResult Delete(int id)
         {
-            var hydrograph = db.Hydrographs.Find(id);
-            if (hydrograph == null)
+            var Storm = db.Storms.Find(id);
+            if (Storm == null)
             {
                 return NotFound();
             }
 
-            db.Hydrographs.Remove(hydrograph);
+            db.Storms.Remove(Storm);
             db.SaveChanges();
 
-            return Ok(hydrograph);
+            return Ok(Storm);
         }
 
-        private bool HydrographExists(int id)
+        private bool StormExists(int id)
         {
-            return db.Hydrographs.Any(e => e.Id == id);
+            return db.Storms.Any(e => e.Id == id);
         }
     }
 }

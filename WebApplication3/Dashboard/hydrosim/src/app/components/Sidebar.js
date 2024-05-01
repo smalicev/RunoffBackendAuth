@@ -2,17 +2,23 @@ import React from "react";
 import Hoverable from "./Hoverable"
 import HydrographList from "./HydrographList"
 import Hydrograph from "../hydrograph.mjs";
+import CollapsibleTable from "./CollapsibleTable";
+import { useTheme } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+
+function Sidebar ( { title, firstChild, secondChild, DataObjectArray, accordionClick } ) {
+    const theme = useTheme();
 
 
-function Sidebar ( { totals, firstChild, secondChild, Hydrographs, paginatedHydrographs, accordionClick } ) {
-
-  const style = {
-                  display: 'flex',
+    const style = {
+                    bgcolor: 'primary.main',
+        display: 'flex',
+                    color:'primary.contrastText',
                   flexDirection: 'column',
                   rowGap: '1rem',
                   justifyContent: 'flex-start',
                   height: '100vh',
-                  backgroundColor: 'var(--main-bg-color)',
+                  margin: '5px',
                   padding: '2rem',
                   boxShadow: 'rgba(0, 0, 0, 0.25) 0px 28px 20px',
                   ul: { display: 'flex',
@@ -32,34 +38,32 @@ function Sidebar ( { totals, firstChild, secondChild, Hydrographs, paginatedHydr
                       borderTop: '2px solid rgba(92, 92, 92, 0.404)',
                     }
 
-
-return ( 
-  <div>
-    <nav style={style}>
+    return ( 
+    
+        <Box
+            sx={style}        >
+    
       <div className="sidebar-name-container">
-        <h1>Catchment Runoff Calculator</h1>
+                <h1>{title}</h1>
       </div>
       <ul style={style.ul}>
         <Hoverable>
-          <h3>Schematic View (current view)</h3>
-        </Hoverable>
-        <Hoverable>
-          <h3>Documentation (WIP - static page)</h3>
+                    <h3>Documentation</h3>
         </Hoverable>
       </ul>
 
-      <h4>Tools</h4>
-      <div style={toolStyle}>
-      {firstChild ? firstChild : null}
-      {secondChild ? secondChild : null}
-            </div>
-      <h4>Previous Hydrographs</h4>
-            <HydrographList accordionClick={accordionClick} paginatedHydrographs={paginatedHydrographs ? paginatedHydrographs: null} Hydrographs={Hydrographs}></HydrographList>
+            {title === 'HydroSim' ?  <><h4>Tools</h4>
+                                      <div style={toolStyle}>
+                                      {firstChild ? firstChild : null}
+                                      {secondChild ? secondChild : null}
+                                        </div> </>
+                                        : null}
+             <CollapsibleTable DataObjectArray={DataObjectArray} display={accordionClick}></CollapsibleTable>
+            
 
         
       
-    </nav>
-  </div>
+    </Box>
 );
 }
 

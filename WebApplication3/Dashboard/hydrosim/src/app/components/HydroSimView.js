@@ -19,11 +19,12 @@ import CatchmentIcon from "./CatchmentIcon"
 import Hoverable from "./Hoverable"
 import Hydrograph from "../hydrograph.mjs";
 import { paginate } from "../numericalMethods.mjs"
-
+import Box from '@mui/material/Box';
+import { useTheme } from '@mui/material/styles';
 Chart.register(LinearScale);
 Chart.register(CategoryScale);
 
-function SchematicView( { Id, Hydrographs} ) {
+function HydroSimView( { Id, Hydrographs} ) {
 
   const [catchments, setCatchments] = useState(0);
   const [storms, setStorms] = useState(0);
@@ -39,7 +40,7 @@ function SchematicView( { Id, Hydrographs} ) {
     const [paginatedHydrographs, setPaginatedHydrographs] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [hydrgraphRefTable, setHydrographRefTable] = useState(null);
-
+    const theme = useTheme();
 
     function hydrographsToRefObject(hydrographs) {
         let refObject = {};
@@ -97,8 +98,10 @@ function SchematicView( { Id, Hydrographs} ) {
     // useRef to store values
   const inputsRef = useRef({});
 
-  const tabStyle = {
-    backgroundColor: 'var(--main-bg-color)',
+    const tabStyle = {
+        bgcolor: 'primary.main',
+        display: 'flex',
+        color: 'primary.contrastText',
     boxShadow: 'rgba(0, 0, 0, 0.25) 0px 28px 20px',
     height: '100vh',
     width: '20%',
@@ -109,7 +112,10 @@ function SchematicView( { Id, Hydrographs} ) {
     rowGap: '4rem'
   }
 
-  const schematicViewStyle = {
+    const HydroSimViewStyle = {
+        bgcolor: 'primary.dark',
+        display: 'flex',
+        color: 'primary.contrastText',
       display: 'flex',
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -216,7 +222,8 @@ function SchematicView( { Id, Hydrographs} ) {
   }
 
 
-  function handleOnClick(event) {
+    function handleOnClick(event) {
+      console.log(hydrographs)
     if (event.target.className !== 'contextMenu' && contextMenuOn) {
       setContextMenu(false)
     }
@@ -295,13 +302,14 @@ function SchematicView( { Id, Hydrographs} ) {
 
 return ( 
     <DndContext  id="1" onDragEnd={handleDragEnd} onDragStart={handleDragStart} >
-      <div style = {schematicViewStyle} onClick={handleOnClick}>
-            <Sidebar accordionClick={handleHydrographClick} paginatedHydrographs={paginatedHydrographs ? paginatedHydrographs : null}
+      <Box sx = {HydroSimViewStyle} onClick={handleOnClick}>
+            <Sidebar accordionClick={handleHydrographClick}
                 totals={[{ 'catchments': catchments }, { 'storms': storms }]}
+                title={'HydroSim' }
                 firstChild={draggableCatchmentMarkup}
                 secondChild={draggableStormMarkup}
-                Hydrographs={hydrographs ? hydrographs : Hydrographs ? Hydrographs : []}>
-        </Sidebar>
+                DataObjectArray={hydrographs ? hydrographs : Hydrographs ? Hydrographs : []}>
+            </Sidebar>
         <div  onContextMenu={handleContextMenu}>
           <Droppable 
             currentStorm={currentStorm} 
@@ -337,16 +345,16 @@ return (
           
           {contextMenuOn ? <ContextMenu contextObject={context} mousePosition={mousePosition}></ContextMenu>: null}
         </div>
-        <div style={tabStyle} >
-                {currentHydrograph ? <LineChart chartData={LineData}
+        <Box sx={tabStyle} >
+                {currentHydrograph ? <LineChart XLabel='Time (minutes)' YLabel='Runoff (m\u00B3)' Context='Simulated runoff hydrograph based on provided storm and catchment' chartData={LineData}
                     header={currentHydrograph.name ? currentHydrograph.name : `${currentHydrograph.StormName} on ${currentHydrograph.CatchmentName}`} />
                     : <h4>Add a catchment and storm to get started. <br /> <br /></h4>}
           {editingModeOn ? <EditMenu editSubmission={handleEditSubmission} editingObject={context}></EditMenu> : null}
           
-        </div>
-      </div>
+        </Box>
+      </Box>
     </DndContext>
 );
 }
 
-export { SchematicView as default };
+export { HydroSimView as default };

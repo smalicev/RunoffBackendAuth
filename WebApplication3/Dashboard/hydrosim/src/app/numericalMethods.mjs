@@ -19,6 +19,11 @@ function paginate(list) {
     return totalArray;
 }
 
+function interpolate(xOne, xTwo, yOne, yTwo, xInt) {
+    let linearFactor = (yTwo - yOne) / (xTwo - xOne);
+    return linearFactor * xInt;
+}
+
 function incrementCumulative(cumulativeArray) {
   let incrementalArray = [];
   

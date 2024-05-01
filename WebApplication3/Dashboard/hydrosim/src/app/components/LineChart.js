@@ -2,7 +2,7 @@ import React from "react";
 import { Line } from "react-chartjs-2";
 
 
-function LineChart({ chartData, header }) {
+function LineChart({ chartData, header, XLabel, YLabel, Context }) {
 
   const options = {
     responsive: true,
@@ -10,13 +10,13 @@ function LineChart({ chartData, header }) {
       x: {
         title: {
           display:true,
-          text:'Time (minutes)'
+          text: XLabel,
         }
       },
       y: {
         title: {
           display:true,
-          text: 'Runoff (m\u00B3/s)'
+              text: YLabel
         },
         min: 0,
       }
@@ -27,7 +27,7 @@ function LineChart({ chartData, header }) {
       },
       title: {
         display: true,
-        text: 'Simulated hydrograph based on the current catchment and storm',
+          text: Context,
       },
     },
   };
