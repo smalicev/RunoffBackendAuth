@@ -1,10 +1,13 @@
 import React from "react";
 import { Line } from "react-chartjs-2";
-
-
+import Box from '@mui/material/Box';
+import { useTheme } from '@mui/material/styles';
 function LineChart({ chartData, header, XLabel, YLabel, Context }) {
+    const theme = useTheme();
+    
 
-  const options = {
+    const options = {
+        maintainAspectRatio: false,
     responsive: true,
     scales: {
       x: {
@@ -32,14 +35,17 @@ function LineChart({ chartData, header, XLabel, YLabel, Context }) {
     },
   };
 
-  return (
-    <div className="chart-container">
-      <h2 style={{ textAlign: "center" }}> {header}</h2>
-      <Line
-        data={chartData}
-        options={options}
-      />
-    </div>
+    return (
+      <>
+        <h2 style={{ textAlign: "center" }}> {header}</h2>
+      
+        <Box minHeight='4rem' color='primary.light'>
+          <Line
+            data={chartData}
+            options={options}
+          />
+        </Box>
+    </>
   );
 }
 export { LineChart as default };

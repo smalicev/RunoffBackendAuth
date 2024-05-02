@@ -13,10 +13,11 @@ import Account from "./components/Account";
 import StormTabView from "./components/StormTabView";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 export default function Home() {
     const [hasToken, setHasToken] = useState(true);
     const [userObject, setUserObject] = useState(null);
-    const [authResponse, setAuthResponse] = useState(null);
+    const [authResponse, setAuthResponse] = useState(false);
     const [hydrographs, setHydrographs] = useState(null);
     const [Storms, setStorms] = useState(null);
     const [isRegistering, setRegistering] = useState(false);
@@ -39,6 +40,18 @@ export default function Home() {
                         }
                     }
                 }
+            },
+
+            MuiMenu: {
+                styleOverrides: {
+                    list: {
+                        '&[role="menu"]': {
+                            backgroundColor: secondaryColour,
+                            color: 'black',
+                            textShadow: '0px 0px 2px rgba(0, 0, 0, 0.26)'
+                        },
+                    },
+                },
             },
 
             MuiInputBase: {
@@ -105,11 +118,11 @@ export default function Home() {
         switch (appView) {
             case null:
               return  (hydrographs ? <HydroSimView Id={authResponse.Id} Hydrographs={hydrographs}></HydroSimView>
-                    : <LineWave wrapperStyle={{ margin: 'auto', left: '35%', top: '35%' }} height='400' width='400'> </LineWave>)
+                  : <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CircularProgress size='4rem' color='secondary' /></Box>)
                 break
             case 'HydroSim':
                 return (hydrographs ? <HydroSimView Id={authResponse.Id} Hydrographs={hydrographs}></HydroSimView>
-                    : <LineWave wrapperStyle={{ margin: 'auto', left: '35%', top: '35%' }} height='400' width='400'> </LineWave>)
+                    : <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CircularProgress size='4rem' color='secondary' /></Box>)
                 break
             case 'Account':
                 return (<Account exitAccountViewButton={exitAccountViewButton}></Account>);

@@ -179,8 +179,8 @@ function ResponsiveAppBar({ pages, settings, appButton, loginButton, loginState,
 
 
                     <div>
-                        {(loginState ? <IconButton onClick={() => { setView('Account') }}>
-                            <Avatar {...stringAvatar(localStorage.getItem('Email'))} />
+                        {(loginState ? <IconButton onClick={() => { appButton('Account') }}>
+                            {/* //<Avatar {...stringAvatar(localStorage.getItem('Email'))} /> */}
                         </IconButton> : null)}
 
                         {loginState ? <Button color='secondary' variant='contained'  onClick={handleLogout} style={{ marginLeft: '0.5rem' }} size='small'>Logout</Button> :

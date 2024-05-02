@@ -9,8 +9,8 @@ export default function StormIcon( { style } ) {
   return (<>
     <Image data-type='storm'
       src={stormIcon}
-      height={100}
-      width={100}
+          height={70}
+          width={70}
       alt='A logo of a cloud with rainfall'
       style={style}/>
     </>

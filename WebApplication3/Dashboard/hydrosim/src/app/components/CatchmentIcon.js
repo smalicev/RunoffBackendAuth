@@ -7,8 +7,8 @@ export default function CatchmentIcon( { style } ) {
   return (<>
     <Image data-type='catchment'
       src={catchmentIcon}
-      height={100}
-      width={100}
+      height={70}
+      width={70}
       alt = 'A logo of an urban street with buildings and other infrastructure'
       style={style}/>
     </>

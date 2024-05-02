@@ -22,8 +22,8 @@ function Row({ row, displayButton }) {
 
     return (
         <React.Fragment>
-            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                <TableCell>
+            <TableRow sx={{ backgroundColor:'red', '& > *': { borderBottom: 'unset' } }}>
+                <TableCell sx={{ backgroundColor: 'red' }} >
                     <IconButton
                         aria-label="expand row"
                         size="small"
@@ -100,8 +100,8 @@ export default function CollapsibleTable({ DataObjectArray, display }) {
             <Table aria-label="collapsible table">
                 <TableHead>
                     <TableRow>
-                        <TableCell />
-                        <TableCell>Date</TableCell>
+                        <TableCell sx={{ backgroundColor: 'primary.dark' }} />
+                        <TableCell sx={{ color: 'secondary.main', backgroundColor: 'primary.dark' }}> Date</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>

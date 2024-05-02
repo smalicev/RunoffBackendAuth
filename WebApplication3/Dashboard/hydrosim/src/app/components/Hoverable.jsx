@@ -1,24 +1,30 @@
 import React, {useState} from "react";
-
+import { useTheme } from '@mui/material/styles';
 export default function Hoverable(props) {
   const [hover, setHover] = useState(false);
-  
+    const theme = useTheme();
+
+    let defaultStyle = props.defaultStyle;
+    let hoverStyle = props.style;
+
   function handleMouseEnter() {
     setHover(true);
   }
 
   function handleMouseLeave() {
-    setHover(false);
+      setHover(false);
+      console.log(hoverStyle)
   }
 
 
-  const style = hover ? {
-    backgroundColor: 'rgba(0, 255, 179, 0.216)',
+    const style = hover ? {
+        ...defaultStyle,
+        backgroundColor: 'primary.main',
+        border: hoverStyle ? hoverStyle.border : undefined,
+        borderRadius: hoverStyle ? hoverStyle.borderRadius : undefined,
+        boxShadow: hoverStyle ? hoverStyle.boxShadow : undefined,
 
-    borderRadius: props.style ? props.style.borderRadius : undefined,
-    boxShadow: props.style ? props.style.boxShadow : undefined,
-
-  } : undefined;
+  } : defaultStyle;
 
 
   return (

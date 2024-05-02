@@ -1,24 +1,26 @@
 import React from "react";
-import Hoverable from "./Hoverable"
 import HydrographList from "./HydrographList"
 import Hydrograph from "../hydrograph.mjs";
 import CollapsibleTable from "./CollapsibleTable";
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import Image from 'next/image'
+import documentation from "../../../public/documentation.svg"
+import NestedModal from "./NestedModal"
 
-function Sidebar ( { title, firstChild, secondChild, DataObjectArray, accordionClick } ) {
+function Sidebar ( { title, firstChild, secondChild, DataObjectArray, accordionClick, modalText, childModalText } ) {
     const theme = useTheme();
 
 
     const style = {
-                    bgcolor: 'primary.main',
-        display: 'flex',
-                    color:'primary.contrastText',
+                    backgroundColor: 'primary.main',
+                    display: 'flex',
+        color: 'black',
+        textShadow: '0px 0px 2px rgba(0, 0, 0, 0.26)',
                   flexDirection: 'column',
                   rowGap: '1rem',
                   justifyContent: 'flex-start',
                   height: '100vh',
-                  margin: '5px',
                   padding: '2rem',
                   boxShadow: 'rgba(0, 0, 0, 0.25) 0px 28px 20px',
                   ul: { display: 'flex',
@@ -32,24 +34,27 @@ function Sidebar ( { title, firstChild, secondChild, DataObjectArray, accordionC
   const toolStyle = {
                       display: 'flex',
                       flexDirection: 'row',
-                      rowGap: '1rem',
+                      columnGap: '1rem',
                       justifyContent: 'space-around',
                       padding: '1rem',
-                      borderTop: '2px solid rgba(92, 92, 92, 0.404)',
+                      borderTop: '2px solid #ffb300',
                     }
 
     return ( 
     
-        <Box
-            sx={style}        >
+        <Box color='secondary.main'
+            sx={style}>
     
-      <div className="sidebar-name-container">
-                <h1>{title}</h1>
-      </div>
+      <h1>{title}</h1>
       <ul style={style.ul}>
-        <Hoverable>
-                    <h3>Documentation</h3>
-        </Hoverable>
+                <NestedModal modalText={modalText} childModalText={'tet' } buttonLabel={'Documentation'} icon={<Image
+                    src={documentation}
+                    height={'3rem'}
+                    width={'3rem'}
+                    alt='icon of a sheet of paper'
+                /> }> 
+                                
+                </NestedModal>
       </ul>
 
             {title === 'HydroSim' ?  <><h4>Tools</h4>

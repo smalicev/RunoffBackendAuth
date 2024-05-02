@@ -54,25 +54,8 @@
   font-family: var(--font-mono);
 }
 
-
-.icon {
-
-  display:flex;
-  justify-content: space-around;
-
-}
-
 .hydrographContainer {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  column-gap: 2rem;
-  padding: 2rem;
-  width: 45rem;
-  height: 15rem;
-  background-color: rgba(255, 252, 248, 0.808);
-  border: 0.1rem solid rgba(92, 92, 92, 0.404);
-  border-radius: 1rem;
+
 }
 
 .catchmentSlot {

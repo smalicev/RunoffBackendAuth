@@ -40,16 +40,14 @@ function Login({ isRegistering, handleNotRegistering, handleRegistering}) {
     const secondaryStatic = theme.palette.secondary.main;
 
     const loginStyle = {
-        position: 'fixed',
-        left: '50%',
-        bottom: '50%',
-        transform: 'translate(-50%, 50%)',
         display: 'flex',
-        width: '30%',
+        width: '100%',
         flexDirection: 'column',
         rowGap: '3rem',
+        padding: '1rem',
         zIndex: '12',
-        alignItems:'center'
+        alignItems: 'center',
+        overflow: 'scroll'
     }
 
     const alertStyle = {
@@ -71,8 +69,7 @@ function Login({ isRegistering, handleNotRegistering, handleRegistering}) {
         borderRadius: '0.5rem',
         alignItems:'center',
         flexDirection: 'column',
-        width: '60%',
-        height: '100%',
+        width: '30%',
         rowGap: '2rem',
         justifyContent: 'center',
         padding: '2rem',
@@ -217,16 +214,15 @@ function Login({ isRegistering, handleNotRegistering, handleRegistering}) {
     };
 
     const LoginMarkup = (
-            <>
+        <Box style={loginStyle}>
             <h2 style={headerStyle}>Sign in to your account</h2>
             <Box
                 component="form"
                 autoComplete="off"
                 noValidate
-                sx={formStyle }            >
+                sx={formStyle}>
 
-            
-                    <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined" color='secondary'>
+                <FormControl fullWidth={true} sx={{ m: 1 }} variant="outlined" color='secondary'>
                         <InputLabel color='secondary' htmlFor="email">Email</InputLabel>
                         <OutlinedInput 
                             id="email"
@@ -244,7 +240,7 @@ function Login({ isRegistering, handleNotRegistering, handleRegistering}) {
                     </FormControl>
                 
                 
-                    <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined" color='secondary'>
+                <FormControl fullWidth={true} sx={{ m: 1, }} variant="outlined" color='secondary'>
                         <InputLabel color='secondary' htmlFor="password">Password</InputLabel>
                         <OutlinedInput color='secondary'
                                 id="password"
@@ -275,18 +271,18 @@ function Login({ isRegistering, handleNotRegistering, handleRegistering}) {
                         </FormControl>
                 <Button fullWidth={true} color='secondary' variant="contained" onClick={handleLogin} type="submit">Log in</Button>
             </Box>
+
             <h2 style={headerStyle}>{`Don't have an account? `}
                     <Link color='secondary' onClick={handleRegistering} href="#" underline="hover">
                         Sign up here.
                     </Link>
                 </h2>
-            
-        </>)
+        </Box>)
 
 
 
     let registerMarkup = (
-        <>
+        <Box style={loginStyle}>
             <h2 style={headerStyle} >Sign up for SWMShare</h2>
             <Box
                 component="form"
@@ -294,7 +290,7 @@ function Login({ isRegistering, handleNotRegistering, handleRegistering}) {
                 noValidate
                 sx={formStyle}            >
 
-                <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined" required color='secondary'>
+                <FormControl fullWidth={true} sx={{ m: 1, }} variant="outlined" required color='secondary'>
                     <InputLabel color='secondary' htmlFor="email">User Name</InputLabel>
                     <OutlinedInput
                         id="firstName"
@@ -311,7 +307,7 @@ function Login({ isRegistering, handleNotRegistering, handleRegistering}) {
                     />
                 </FormControl>
 
-                <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined" required color='secondary' value={email} onChange={handleEmailChange}>
+                <FormControl fullWidth={true} sx={{ m: 1, }} variant="outlined" required color='secondary' value={email} onChange={handleEmailChange}>
                 <InputLabel color='secondary' htmlFor="email">Email</InputLabel>
                 <OutlinedInput
                     id="email"
@@ -329,7 +325,7 @@ function Login({ isRegistering, handleNotRegistering, handleRegistering}) {
                 />
             </FormControl>
 
-                <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined" required color='secondary' value={confirmEmail } onChange={handleConfirmEmailChange}>
+                <FormControl fullWidth={true}  sx={{ m: 1, }} variant="outlined" required color='secondary' value={confirmEmail } onChange={handleConfirmEmailChange}>
                 <InputLabel color='secondary' htmlFor="confirmEmail">Confirm Email</InputLabel>
                     <OutlinedInput
                     inputProps={{ onBlur: handleConfirmEmailCheck }}
@@ -348,7 +344,7 @@ function Login({ isRegistering, handleNotRegistering, handleRegistering}) {
                     <FormHelperText color='secondary'> {emailMatch ? null : 'Emails do not match.'} </FormHelperText>
             </FormControl>
 
-                <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined" required color='secondary' value={password } onChange={handlePasswordChange}>
+                <FormControl fullWidth={true} sx={{ m: 1, }} variant="outlined" required color='secondary' value={password } onChange={handlePasswordChange}>
                 <InputLabel color='secondary' htmlFor="password">Password</InputLabel>
                     <OutlinedInput color='secondary'
                     inputProps={{ onBlur: handlePasswordRequirements }}
@@ -379,7 +375,7 @@ function Login({ isRegistering, handleNotRegistering, handleRegistering}) {
                     />
                     <FormHelperText color='secondary'> {passwordPasses ? null : 'Please enter a minimum 6-character password with at least one non-alphanumeric character and one uppercase character.'} </FormHelperText>
             </FormControl>
-                <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined" required color='secondary' value={confirmPassword} onChange={handleConfirmPasswordChange} >
+                <FormControl fullWidth={true}  sx={{ m: 1, }} variant="outlined" required color='secondary' value={confirmPassword} onChange={handleConfirmPasswordChange} >
                 <InputLabel color='secondary' htmlFor="confirmPassword">Confirm Password</InputLabel>
                     <OutlinedInput color='secondary'
                     inputProps={{ onBlur: handleConfirmPasswordCheck }}
@@ -419,7 +415,7 @@ function Login({ isRegistering, handleNotRegistering, handleRegistering}) {
                <Link color='secondary' onClick={handleNotRegistering} href="#" underline="hover">
                       {'Click here to sign in.'}
                  </Link> </h2>
-        </>)
+        </Box>)
 
     return (
         <div style={loginStyle}>

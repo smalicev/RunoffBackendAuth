@@ -21,6 +21,9 @@ import Hydrograph from "../hydrograph.mjs";
 import { paginate } from "../numericalMethods.mjs"
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
+import Markdown from 'react-markdown'
+import Hydrosim from '../../../public/docs/Hydrosim.md'
+
 Chart.register(LinearScale);
 Chart.register(CategoryScale);
 
@@ -101,7 +104,8 @@ function HydroSimView( { Id, Hydrographs} ) {
     const tabStyle = {
         bgcolor: 'primary.main',
         display: 'flex',
-        color: 'primary.contrastText',
+        color: 'black',
+        textShadow: '0px 0px 2px rgba(0, 0, 0, 0.26)',
     boxShadow: 'rgba(0, 0, 0, 0.25) 0px 28px 20px',
     height: '100vh',
     width: '20%',
@@ -137,7 +141,7 @@ function HydroSimView( { Id, Hydrographs} ) {
 
   const draggableCatchmentMarkup = (
     <Draggable id='addCatchment'>
-      <Hoverable style= { {borderRadius: '10%', boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',}}>
+          <Hoverable defaultStyle={{ display: 'flex', alignItems: 'center', justifyContent: 'center', border: '0.2rem solid rgba(0,0,0,0)'}} style={{ border: '0.2rem solid black', borderRadius: '50%', boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',}}>
         <CatchmentIcon style={ { borderRadius: '50%', zIndex: 15}}></CatchmentIcon>
       </Hoverable>
     </Draggable>
@@ -145,7 +149,7 @@ function HydroSimView( { Id, Hydrographs} ) {
   );
   const draggableStormMarkup = (
     <Draggable id='addStorm'> 
-      <Hoverable style= { {borderRadius: '10%', boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',}}>
+          <Hoverable defaultStyle={{ display: 'flex', alignItems: 'center', justifyContent: 'center', border: '0.2rem solid rgba(0,0,0,0)' }} style={{ border: '0.2rem solid black', borderRadius: '50%', boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',}}>
         <StormIcon style={ { borderRadius: '50%', zIndex: 15 }}></StormIcon>
       </Hoverable>
     </Draggable>
@@ -303,24 +307,27 @@ function HydroSimView( { Id, Hydrographs} ) {
 return ( 
     <DndContext  id="1" onDragEnd={handleDragEnd} onDragStart={handleDragStart} >
       <Box sx = {HydroSimViewStyle} onClick={handleOnClick}>
-            <Sidebar accordionClick={handleHydrographClick}
+            <Sidebar
+                modalText={<Markdown>{Hydrosim}</Markdown> }
+                accordionClick={handleHydrographClick}
                 totals={[{ 'catchments': catchments }, { 'storms': storms }]}
                 title={'HydroSim' }
                 firstChild={draggableCatchmentMarkup}
                 secondChild={draggableStormMarkup}
                 DataObjectArray={hydrographs ? hydrographs : Hydrographs ? Hydrographs : []}>
             </Sidebar>
-        <div  onContextMenu={handleContextMenu}>
+        <Box color='primary.main' onContextMenu={handleContextMenu}>
           <Droppable 
             currentStorm={currentStorm} 
             currentCatchment={currentCatchment} 
                     draggableCurrentStorm=
                     {currentStorm ? 
-                                                <Hoverable style= { {borderRadius: '10%', boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',}}> 
+                        <Hoverable defaultStyle={{ display: 'flex', alignItems: 'center', justifyContent: 'center', border: '0.2rem solid rgba(0,0,0,0)' }} style={{ border: '0.2rem solid black', borderRadius: '50%', boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px', }}> 
                                                   <Draggable 
                                                     data-type='storm'
-                                                    id={'storm-' + currentStorm.id}>
-                                                    <div className={styles.icon} data-type='storm'>
+                                                    id={'storm-' + currentStorm.id}
+                                                    >
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-type='storm'>
                                                       <StormIcon data-type='storm' style={ { borderRadius: '50%' } } >
                                                       </StormIcon>
                                                     </div>
@@ -329,13 +336,14 @@ return (
             id={'0'} 
                     draggableCurrentCatchment=
                     {currentCatchment ? 
-                                                <Hoverable style= { {borderRadius: '10%', boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',}}> 
+                        <Hoverable defaultStyle={{ display: 'flex', alignItems: 'center', justifyContent: 'center', border: '0.2rem solid rgba(0,0,0,0)' }} style={{ border: '0.2rem solid black', borderRadius: '50%', boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',}}> 
                                                   <Draggable
                                                     data-type='catchment'
                                                     id={'catchment-' + currentCatchment.id}>
-                                                      <div className={styles.icon} data-type='catchment'>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-type='catchment'>
                                                         <CatchmentIcon data-type='catchment' style={ { borderRadius: '50%' } }>
-                                                          </CatchmentIcon>
+                                    </CatchmentIcon>
+                                                          
                                                       </div>
                                                   </Draggable>
                                                 </Hoverable> : null}>
@@ -344,7 +352,7 @@ return (
 
           
           {contextMenuOn ? <ContextMenu contextObject={context} mousePosition={mousePosition}></ContextMenu>: null}
-        </div>
+        </Box>
         <Box sx={tabStyle} >
                 {currentHydrograph ? <LineChart XLabel='Time (minutes)' YLabel='Runoff (m\u00B3)' Context='Simulated runoff hydrograph based on provided storm and catchment' chartData={LineData}
                     header={currentHydrograph.name ? currentHydrograph.name : `${currentHydrograph.StormName} on ${currentHydrograph.CatchmentName}`} />
