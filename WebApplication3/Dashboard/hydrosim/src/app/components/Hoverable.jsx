@@ -19,7 +19,7 @@ export default function Hoverable(props) {
 
     const style = hover ? {
         ...defaultStyle,
-        backgroundColor: 'primary.main',
+        backgroundColor: theme.palette.primary.dark,
         border: hoverStyle ? hoverStyle.border : undefined,
         borderRadius: hoverStyle ? hoverStyle.borderRadius : undefined,
         boxShadow: hoverStyle ? hoverStyle.boxShadow : undefined,

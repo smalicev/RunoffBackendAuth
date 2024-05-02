@@ -16,8 +16,8 @@ export function Droppable(props) {
   let draggableCurrentCatchment = props.draggableCurrentCatchment;
 
   const style = {
-        border: isOver ? '0.2rem solid rgba(0, 0, 0, .05)' : undefined,
-      backgroundColor: isOver ? 'rgba(0, 0, 0, .3)' : undefined,
+        border: isOver ? '0.1rem solid rgba(0, 0, 0, 1)' : undefined,
+      backgroundColor: isOver ? 'rgba(0, 0, 0, 1)' : undefined,
       borderRadius: '1rem',
     };
 
