@@ -14,6 +14,7 @@ import StormTabView from "./components/StormTabView";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
+import { red } from "@mui/material/colors";
 export default function Home() {
     const [hasToken, setHasToken] = useState(true);
     const [userObject, setUserObject] = useState(null);
@@ -39,6 +40,18 @@ export default function Home() {
                             color: secondaryColour
                         }
                     }
+                }
+            },
+
+            MuiAutocomplete: {
+                styleOverrides: {
+                    popper: {
+                        backgroundColor: secondaryColour
+                    },
+                    listbox: {
+                        backgroundColor: secondaryColour
+                    }
+                    
                 }
             },
 

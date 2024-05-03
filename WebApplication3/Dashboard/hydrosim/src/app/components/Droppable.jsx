@@ -15,7 +15,7 @@ export function Droppable(props) {
   let draggableCurrentStorm = props.draggableCurrentStorm;
   let draggableCurrentCatchment = props.draggableCurrentCatchment;
 
-  const style = {
+    const style = {
         border: isOver ? '0.1rem solid rgba(0, 0, 0, 1)' : undefined,
       backgroundColor: isOver ? 'rgba(0, 0, 0, 1)' : undefined,
       borderRadius: '1rem',
@@ -28,7 +28,7 @@ export function Droppable(props) {
         columnGap: '2rem',
         padding: '2rem',
         width: '45rem',
-        height: '15rem',
+        height: '12rem',
         backgroundColor: 'rgba(225, 222, 228, 0.808)',
         borderRadius: '1rem',
         opacity: '0.9'

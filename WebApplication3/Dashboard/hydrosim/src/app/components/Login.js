@@ -47,7 +47,8 @@ function Login({ isRegistering, handleNotRegistering, handleRegistering}) {
         padding: '1rem',
         zIndex: '12',
         alignItems: 'center',
-        overflow: 'scroll'
+        height: '100%',
+        overflow: 'auto'
     }
 
     const alertStyle = {
@@ -160,6 +161,8 @@ function Login({ isRegistering, handleNotRegistering, handleRegistering}) {
             .then(response => response.json())
             .then(data => {
                 console.log('Token:', data.access_token);
+                console.log(data);
+                console.log(email, password)
                 localStorage.setItem('access_token', data.access_token)
                 setLoginSuccess(true);
                 refreshPage();
@@ -222,7 +225,7 @@ function Login({ isRegistering, handleNotRegistering, handleRegistering}) {
                 noValidate
                 sx={formStyle}>
 
-                <FormControl fullWidth={true} sx={{ m: 1 }} variant="outlined" color='secondary'>
+                <FormControl fullWidth={true} sx={{ m: 1 }} variant="outlined" color='secondary' value={email} onChange={handleEmailChange}>
                         <InputLabel color='secondary' htmlFor="email">Email</InputLabel>
                         <OutlinedInput 
                             id="email"
@@ -240,7 +243,7 @@ function Login({ isRegistering, handleNotRegistering, handleRegistering}) {
                     </FormControl>
                 
                 
-                <FormControl fullWidth={true} sx={{ m: 1, }} variant="outlined" color='secondary'>
+                <FormControl fullWidth={true} sx={{ m: 1, }} variant="outlined" color='secondary' value={password} onChange={handlePasswordChange}>
                         <InputLabel color='secondary' htmlFor="password">Password</InputLabel>
                         <OutlinedInput color='secondary'
                                 id="password"
@@ -373,7 +376,7 @@ function Login({ isRegistering, handleNotRegistering, handleRegistering}) {
                         }
                     }}
                     />
-                    <FormHelperText color='secondary'> {passwordPasses ? null : 'Please enter a minimum 6-character password with at least one non-alphanumeric character and one uppercase character.'} </FormHelperText>
+                    <FormHelperText color='secondary'> {passwordPasses ? null : passwordPasses === null ? null : 'Please enter a minimum 6-character password with at least one non-alphanumeric character and one uppercase character.'} </FormHelperText>
             </FormControl>
                 <FormControl fullWidth={true}  sx={{ m: 1, }} variant="outlined" required color='secondary' value={confirmPassword} onChange={handleConfirmPasswordChange} >
                 <InputLabel color='secondary' htmlFor="confirmPassword">Confirm Password</InputLabel>

@@ -29,7 +29,8 @@ function Sidebar ( { title, firstChild, secondChild, DataObjectArray, accordionC
                         rowGap: '1rem',
                       },
 
-                }
+    }
+    // <CollapsibleTable DataObjectArray={DataObjectArray} display={accordionClick}></CollapsibleTable>
 
   const toolStyle = {
                       display: 'flex',
@@ -63,7 +64,7 @@ function Sidebar ( { title, firstChild, secondChild, DataObjectArray, accordionC
                                       {secondChild ? secondChild : null}
                                         </div> </>
                                         : null}
-             <CollapsibleTable DataObjectArray={DataObjectArray} display={accordionClick}></CollapsibleTable>
+            
             
 
         

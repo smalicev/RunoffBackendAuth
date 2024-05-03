@@ -8,38 +8,71 @@ function LineChart({ chartData, header, XLabel, YLabel, Context }) {
 
     const options = {
         maintainAspectRatio: false,
-    responsive: true,
+        responsive: true,
+        
+        datasets: {
+            line: {
+                backgroundColor: theme.palette.secondary.main,
+                borderColor: theme.palette.secondary.main
+            },
+        },
+        elements: {
+                line: {
+                backgroundColor: theme.palette.secondary.main,
+                },
+        },
     scales: {
-      x: {
+        x: {
+            ticks: {
+
+                color: 'black'
+            },
+            grid: {
+                color: 'rgba(0,0,0,0.4)',
+            },
         title: {
           display:true,
           text: XLabel,
+            color: 'black',
         }
       },
-      y: {
+        y: {
+            ticks: {
+
+                color: 'black'
+            },
+            grid: {
+                color: 'rgba(0,0,0,0.4)',
+            },
+            color: 'rgba(255,255,255,0.3)',
         title: {
           display:true,
-              text: YLabel
+              text: YLabel,
+            color: 'black',
         },
         min: 0,
       }
     },
     plugins: {
       legend: {
-        position: 'top',
+            position: 'top',
+            labels: {
+                color: 'black',
+            }
       },
       title: {
         display: true,
           text: Context,
+          color: 'black',
       },
     },
   };
 
     return (
       <>
-        <h2 style={{ textAlign: "center" }}> {header}</h2>
+            <Box style={{ width:'100%', alignItems:'center', justifyContent: 'center', display:'flex', columnGap:'1rem'}}> {header}</Box>
       
-        <Box minHeight='4rem' color='primary.light'>
+            <Box minHeight='24rem' bgcolor={theme.palette.primary.light} sx={{ padding: '1rem', boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px', borderRadius:'2rem'} }>
           <Line
             data={chartData}
             options={options}

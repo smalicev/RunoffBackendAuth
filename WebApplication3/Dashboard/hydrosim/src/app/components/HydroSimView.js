@@ -23,12 +23,17 @@ import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import Markdown from 'react-markdown'
 import Hydrosim from '../../../public/docs/Hydrosim.md'
+import Fade from '@mui/material/Fade';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 
 Chart.register(LinearScale);
 Chart.register(CategoryScale);
 
 function HydroSimView( { Id, Hydrographs} ) {
-
+    const [checkedStorm, setCheckedStorm] = useState(false);
+    const [checkedCatch, setCheckedCatch] = useState(false);
+    const [checkedGraph, setCheckedGraph] = useState(false)
   const [catchments, setCatchments] = useState(0);
   const [storms, setStorms] = useState(0);
   const [parent, setParent] = useState(null);
@@ -40,7 +45,7 @@ function HydroSimView( { Id, Hydrographs} ) {
   const [context, setCurrentContext] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: null, y: null })
   const [hydrographs, setHydrographs] = useState(Hydrographs);
-    const [paginatedHydrographs, setPaginatedHydrographs] = useState(null);
+const [paginatedHydrographs, setPaginatedHydrographs] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [hydrgraphRefTable, setHydrographRefTable] = useState(null);
     const theme = useTheme();
@@ -67,14 +72,36 @@ function HydroSimView( { Id, Hydrographs} ) {
 
 
     //for updates 
-  useEffect(() => {
+    useEffect(() => {
+
+      
       async function submitHydrograph(hydrograph) {
           let hydrographSubmission = await fetch('/api/hydrographs/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(hydrograph) })
       }
+        if (currentCatchment !== null) {
+            setCheckedCatch(true)
+        } else if (currentCatchment === null) {
+            setCheckedCatch(false)
+        }
 
-      if (currentCatchment !== null && currentStorm !== null) {
+        if (currentStorm !== null) {
+            setCheckedStorm(true)
+        } else if (currentStorm === null) {
+            setCheckedStorm(false)
+        }
+
+
+        if (currentCatchment !== null && currentStorm !== null) {
+            setCheckedGraph(true)
           let hydrograph = new Hydrograph(0, currentStorm, currentCatchment);
-          let submissionHydrograph = { Time: hydrograph.Time.toString(), Value: hydrograph.Value.toString(), userId: Id, StormName: currentStorm.name.toString(), CatchmentName: currentCatchment.name.toString(), DateInserted: (new Date()).toISOString().split('T')[0] }
+          let submissionHydrograph = {
+              Time: hydrograph.Time.toString(),
+              Value: hydrograph.Value.toString(),
+              userId: Id,
+              StormName: currentStorm.name.toString(),
+              CatchmentName: currentCatchment.name.toString(),
+              DateInserted: (new Date()).toISOString().split('T')[0]
+          }
           setCurrentHydrograph(hydrograph)
 
           try {
@@ -128,6 +155,7 @@ function HydroSimView( { Id, Hydrographs} ) {
       width: '100%',
   }
 
+  /*
   function grabFormInputs() {
     let form = document.querySelector('form')
     let labels = form.children;
@@ -138,7 +166,7 @@ function HydroSimView( { Id, Hydrographs} ) {
     console.log(inputsRef)
 
   }
-
+  */
   const draggableCatchmentMarkup = (
     <Draggable id='addCatchment'>
           <Hoverable defaultStyle={{ display: 'flex', alignItems: 'center', justifyContent: 'center', border: '0.2rem solid rgba(0,0,0,0)'}} style={{ border: '0.2rem solid black', borderRadius: '50%', boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',}}>
@@ -188,7 +216,7 @@ function HydroSimView( { Id, Hydrographs} ) {
   function handleAddCatchment() {
     let id = catchments;
     setCatchments(catchments + 1);
-    let newCatchment = new Catchment(id, 'Default Catchment')
+    let newCatchment = new Catchment(id, 'Urban Catchment')
     setCurrentCatchment(newCatchment);
   } 
   
@@ -199,31 +227,43 @@ function HydroSimView( { Id, Hydrographs} ) {
     setCurrentStorm(newStorm);
   }
 
-  function handleEditSubmission() {
-    grabFormInputs();
-    let currentID = context.id;
-    setEditing(false);
-    if (context === currentStorm) {
-      let newStorm = new Storm(currentID,
-                      inputsRef.current.name,
-                      inputsRef.current.timeData.split(',').map((val)=> Number(val)),
-                      inputsRef.current.precipitationDataIntensity.split(',').map((val)=> Number(val)))
-
-      setCurrentStorm(newStorm);
-      localStorage.setItem('currentStorm', JSON.stringify(newStorm))
-    } else if (context === currentCatchment) {
+  function handleEditCatchment(catchmentObject) {
+      let currentID = catchmentObject.id;
       let newCatchment = new Catchment(currentID,
-                          inputsRef.current.name,
-                          Number(inputsRef.current.areaHectares),
-                          Number(inputsRef.current.imperviousPercent),
-                          Number(inputsRef.current.slopePercent),
-                          Number(inputsRef.current.curveNumber),
-                          Number(inputsRef.current.flowLength))
+          catchmentObject.name,
+          Number(catchmentObject.areaHectares),
+          Number(catchmentObject.imperviousPercent),
+          Number(catchmentObject.slopePercent),
+          Number(catchmentObject.curveNumber),
+          Number(catchmentObject.flowLength))
       setCurrentCatchment(newCatchment);
-      localStorage.setItem('currentCatchment', JSON.stringify(newCatchment))
     }
 
-  }
+
+    function handleEditStorm(stormObject) {
+        let currentID = stormObject.id;
+        let intensity;
+        let time;
+
+        if (typeof stormObject.precipitationDataIntensity === 'object') {
+            intensity = stormObject.precipitationDataIntensity.map((val) => Number(val));
+        } else if (typeof stormObject.precipitationDataIntensity === 'string') {
+            intensity = stormObject.precipitationDataIntensity.split(',').map((val) => Number(val));
+        }
+
+        if (typeof stormObject.timeData === 'object') {
+            time = stormObject.timeData.map((val) => Number(val));
+        } else if (typeof stormObject.timeData === 'string') {
+            time = stormObject.timeData.split(',').map((val) => Number(val));
+        }
+
+        console.log(stormObject)
+        let newStorm = new Storm(currentID,
+            stormObject.name,
+            time,
+            intensity)
+            setCurrentStorm(newStorm);
+    }
 
 
     function handleOnClick(event) {
@@ -304,10 +344,12 @@ function HydroSimView( { Id, Hydrographs} ) {
 
   */
 
+
+
 return ( 
     <DndContext  id="1" onDragEnd={handleDragEnd} onDragStart={handleDragStart} >
       <Box sx = {HydroSimViewStyle} onClick={handleOnClick}>
-            <Sidebar
+           <Sidebar
                 modalText={<Markdown>{Hydrosim}</Markdown> }
                 accordionClick={handleHydrographClick}
                 totals={[{ 'catchments': catchments }, { 'storms': storms }]}
@@ -316,8 +358,24 @@ return (
                 secondChild={draggableStormMarkup}
                 DataObjectArray={hydrographs ? hydrographs : Hydrographs ? Hydrographs : []}>
             </Sidebar>
-        <Box color='primary.main' onContextMenu={handleContextMenu}>
-          <Droppable 
+            
+            <Box color='primary.main' onContextMenu={handleContextMenu} sx={{display:'flex', height:'80%', flexDirection:'column', rowGap: '2rem'} }>
+                
+                <Box height='70%' sx={{ display: 'flex', columnGap: '3rem', alignItems:'center' }}>
+                    <Fade in={checkedCatch} appear={false }>
+                        <Box>
+                            {currentCatchment ? <EditMenu editSubmission={handleEditCatchment} editingObject={currentCatchment}></EditMenu> : null}
+                        </Box>
+                    </Fade>
+                    <Fade in={checkedStorm}>
+                        <Box>
+                            {currentStorm ? <EditMenu editSubmission={handleEditStorm} editingObject={currentStorm}></EditMenu> : null}
+                        </Box>
+                    </Fade>
+                    
+                </Box>
+                
+                <Droppable 
             currentStorm={currentStorm} 
             currentCatchment={currentCatchment} 
                     draggableCurrentStorm=
@@ -353,12 +411,28 @@ return (
           
           {contextMenuOn ? <ContextMenu contextObject={context} mousePosition={mousePosition}></ContextMenu>: null}
         </Box>
-        <Box sx={tabStyle} >
-                {currentHydrograph ? <LineChart XLabel='Time (minutes)' YLabel='Runoff (m\u00B3)' Context='Simulated runoff hydrograph based on provided storm and catchment' chartData={LineData}
-                    header={currentHydrograph.name ? currentHydrograph.name : `${currentHydrograph.StormName} on ${currentHydrograph.CatchmentName}`} />
-                    : <h4>Add a catchment and storm to get started. <br /> <br /></h4>}
-          {editingModeOn ? <EditMenu editSubmission={handleEditSubmission} editingObject={context}></EditMenu> : null}
-          
+            <Box sx={tabStyle} >
+                <Fade in={checkedGraph}>
+                    <Box sx={{ display: 'flex', flexDirection:'column', rowGap:'2rem' } }>
+                        {currentHydrograph ? <LineChart XLabel='Time (minutes)' YLabel='Runoff (cms)' Context='Simulated runoff hydrograph based on provided storm and catchment' chartData={LineData}
+                            header={<><Autocomplete
+                                disablePortal
+                                id="combo-box-storms"
+                                options={[currentStorm.name]}
+                                sx={{ width: '45%' }}
+                                renderInput={(params) => <TextField labelColor='secondary' color='secondary' sx={{ color: 'secondary.main', backgroundColor: 'primary.main' }} {...params} label="Storm" />} />
+                                on<Autocomplete
+                                disablePortal
+                                id="combo-box-catchments"
+                                options={[currentCatchment.name]}
+                                sx={{ width: '45%' }}
+                                renderInput={(params) => <TextField labelColor='secondary' color='secondary' sx={{ color: 'secondary.main', backgroundColor: 'primary.main' }} {...params} label="Catchment" />}
+                                /></>} /> : null}
+                                
+                        
+                    </Box>
+                </Fade>
+                
         </Box>
       </Box>
     </DndContext>
