@@ -18,8 +18,11 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Paper from '@mui/material/Paper';
+import Image from 'next/image'
+import save from "../../../public/save.svg"
 import { useTheme } from '@mui/material/styles';
-function EditMenu({ editingObject, editSubmission }) {
+import { Typography } from "@mui/material";
+function EditMenu({ editingObject, editSubmission, saveEdits}) {
     const [formStateObject, setFormStateObject] = useState(editingObject ? editingObject : 5)
   let keys = editingObject ? Object.keys(editingObject) : null;
   let values = editingObject ? Object.values(editingObject) : null;
@@ -64,7 +67,10 @@ function EditMenu({ editingObject, editSubmission }) {
 
 return ( 
     <Paper elevation={20} sx={EditMenuStyle}>
-        <h1>{editingObject.name}</h1>
+        <Typography sx={{ fontSize: 'small', marginBottom: '-1rem', letterSpacing: '0.15rem', textShadow: '0px 0px 3px rgba(0, 0, 0, 0.56)', } }>
+            Editing
+        </Typography>
+        <Typography color='secondary.main' sx={{ fontSize: '2rem' }} >{editingObject.name}</Typography>
     <form style={editMenuFormStyle}>
       {keys.map((property,idx) => {
 
@@ -74,7 +80,7 @@ return (
                 setFormStateObject({ ...formStateObject, [property]: e.target.value });
             }
           }>
-                        <InputLabel color='secondary' htmlFor="email">{publicNames[property]}</InputLabel>
+                <InputLabel color='secondary' htmlFor={property}>{publicNames[property]}</InputLabel>
                         <FilledInput 
                             id={property}
                             type='text'
@@ -92,7 +98,12 @@ return (
                  </FormControl>
         }
       })}
-      <Button fullWidth={true} color='secondary' variant="contained" onClick ={() => editSubmission(formStateObject)} type='button'>Recalculate </Button>
+            <Button fullWidth={true} color='secondary' variant="contained" onClick={() => editSubmission(formStateObject)} type='button'>Recalculate </Button>
+            <Button color='secondary' variant="contained" onClick={() => saveEdits(formStateObject)} type='button'><Image src={save}
+                                                                                                                                                height='10%'
+                                                                                                                                                width='10%'
+                                                                                                                                                alt='save icon'/> 
+                                                                                                                                                </Button>
     </form>
   </Paper>
 );

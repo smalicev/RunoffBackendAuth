@@ -13,7 +13,6 @@ export default function Hoverable(props) {
 
   function handleMouseLeave() {
       setHover(false);
-      console.log(hoverStyle)
   }
 
 

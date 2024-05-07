@@ -15,7 +15,7 @@ function Sidebar ( { title, firstChild, secondChild, DataObjectArray, accordionC
     const style = {
                     backgroundColor: 'primary.main',
                     display: 'flex',
-        color: 'black',
+        color: 'secondary.main',
         textShadow: '0px 0px 2px rgba(0, 0, 0, 0.26)',
                   flexDirection: 'column',
                   rowGap: '1rem',

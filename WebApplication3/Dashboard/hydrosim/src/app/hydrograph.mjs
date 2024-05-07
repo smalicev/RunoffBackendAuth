@@ -31,7 +31,7 @@ class Hydrograph {
     return intensityArray
   }
 
-  // kinmateic wave k might need a redo look at alan smith docs
+  // kinmateic wave k might need a redo
   calcKinematicWaveK() {
     let maxIntensity = Math.max(...this.storm.precipitationDataIntensity)
     console.log(maxIntensity)

@@ -1,5 +1,5 @@
 'use client'
-import React, {useState, useRef, useEffect} from "react";
+import React, {useState, useRef, useEffect, useMemo} from "react";
 import Image from 'next/image'
 import styles from "../page.module.css";
 import { DndContext } from "@dnd-kit/core";
@@ -26,16 +26,20 @@ import Hydrosim from '../../../public/docs/Hydrosim.md'
 import Fade from '@mui/material/Fade';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import Alert from '@mui/material/Alert';
+import { Select } from "@mui/material";
+
 
 Chart.register(LinearScale);
 Chart.register(CategoryScale);
 
-function HydroSimView( { Id, Hydrographs} ) {
+function HydroSimView( { Id, Hydrographs, Catchments, Storms} ) {
     const [checkedStorm, setCheckedStorm] = useState(false);
     const [checkedCatch, setCheckedCatch] = useState(false);
     const [checkedGraph, setCheckedGraph] = useState(false)
-  const [catchments, setCatchments] = useState(0);
-  const [storms, setStorms] = useState(0);
+  const [urbanCatchments, setUrbanCatchments] = useState(Catchments);
+    const [storms, setStorms] = useState(Storms);
+    const [stormTable, setStormTable] = useState(null);
   const [parent, setParent] = useState(null);
   const [editingModeOn, setEditing] = useState(false);
   const [currentStorm, setCurrentStorm] = useState(null)
@@ -48,7 +52,12 @@ function HydroSimView( { Id, Hydrographs} ) {
 const [paginatedHydrographs, setPaginatedHydrographs] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [hydrgraphRefTable, setHydrographRefTable] = useState(null);
+    const [submissionStatus, setSubmissionStatus] = useState(null);
     const theme = useTheme();
+
+
+    const stormsTable = useMemo(() => mapToName(storms), [storms])
+    const urbanCatchmentsTable = useMemo(() => mapToName(urbanCatchments), [urbanCatchments])
 
     function hydrographsToRefObject(hydrographs) {
         let refObject = {};
@@ -60,24 +69,44 @@ const [paginatedHydrographs, setPaginatedHydrographs] = useState(null);
         return refObject;
     }
 
+    function arrayToRefObject(arrayOfObjects = []) {
+        let refObject = {};
+
+        arrayOfObjects.forEach((object) => {
+            refObject[object.Id] = object;
+        })
+
+        return refObject;
+    }
+
+    function mapToName(arrayOfObjects = []) {
+        let refObject = {};
+
+        arrayOfObjects.forEach((object) => {
+            if (object.CatchmentDescription || object.areaHectares) {
+                console.log('cathments')
+                refObject[(object.CatchmentDescription ? object.CatchmentDescription: object.name)] = object;
+            } else if (object.StormDescription || object.precipitationDataIntensity) {
+                refObject[(object.StormDescription ? object.StormDescription : object.name)] = object;
+            }
+            
+        })
+        console.log(refObject, 'maptoname')
+        return refObject;
+    }
+
     // for first page load
     useEffect(() => {
 
-        if (hydrographs !== null && hydrographs !== undefined) {
-            setPaginatedHydrographs(paginate(hydrographs))
-            setHydrographRefTable(hydrographsToRefObject(hydrographs))
-        }
 
-    }, [hydrographs])
+    }, [])
 
 
     //for updates 
     useEffect(() => {
-
-      
-      async function submitHydrograph(hydrograph) {
-          let hydrographSubmission = await fetch('/api/hydrographs/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(hydrograph) })
-      }
+      //async function submitHydrograph(hydrograph) {
+        //  let hydrographSubmission = await fetch('/api/hydrographs/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(hydrograph) })
+      //}
         if (currentCatchment !== null) {
             setCheckedCatch(true)
         } else if (currentCatchment === null) {
@@ -90,11 +119,16 @@ const [paginatedHydrographs, setPaginatedHydrographs] = useState(null);
             setCheckedStorm(false)
         }
 
-
         if (currentCatchment !== null && currentStorm !== null) {
             setCheckedGraph(true)
-          let hydrograph = new Hydrograph(0, currentStorm, currentCatchment);
-          let submissionHydrograph = {
+                console.log(currentStorm)
+            
+                console.log(currentStorm)
+            let hydrograph = new Hydrograph(0, currentStorm, currentCatchment);
+            setCurrentHydrograph(hydrograph)
+
+          /*
+            let submissionHydrograph = {
               Time: hydrograph.Time.toString(),
               Value: hydrograph.Value.toString(),
               userId: Id,
@@ -102,31 +136,75 @@ const [paginatedHydrographs, setPaginatedHydrographs] = useState(null);
               CatchmentName: currentCatchment.name.toString(),
               DateInserted: (new Date()).toISOString().split('T')[0]
           }
-          setCurrentHydrograph(hydrograph)
 
           try {
               submitHydrograph(submissionHydrograph);
           } catch(e) {
               console.error('error:', e)
           }
-
+              async function getHydrographs() {
+        try {
+            let userHydrographs = await fetch(`/api/hydrographs?userId=${encodeURIComponent(Id)}`, { method: 'GET' });
+            let userHydrographsObj = await userHydrographs.json();
+            setHydrographs(userHydrographsObj);
+        } catch (e) {
+            console.log(e)
+        }
+    }
           getHydrographs();
+          */ 
+            
       }
-
   }, [currentCatchment, currentStorm])
 
 
-    async function getHydrographs() {
-        let userHydrographs = await fetch(`/api/hydrographs?userId=${encodeURIComponent(Id)}`, { method: 'GET' });
-        let userHydrographsObj = await userHydrographs.json();
-        console.log(userHydrographsObj)
-        setHydrographs(userHydrographsObj);
 
+
+    async function getStorms() {
+        try {
+            let serverStorms = await fetch(`/api/storms?userId=${encodeURIComponent(Id)}`, { method: 'GET' });
+            let serverStormsArray = await serverStorms.json();
+
+            userStormsArray = serverStormsArray.map((stormObj) => {
+
+                    return (new Storm(null, stormObj.StormDescription,
+                        stormObj.Time.split(',').map((value) => Number(value)),
+                        stormObj.Value.split(',').map((value) => Number(value))))
+
+
+            })
+
+            setStorms(userStormsArray);
+        } catch (e) {
+            console.log(e)
+        }
     }
 
-    // grab form inputs without setting states for every single field
-    // useRef to store values
-  const inputsRef = useRef({});
+    async function getUrbanCatchments() {
+        try {
+            let serverUrbanCatchments = await fetch(`/api/UrbanCatchments?userId=${encodeURIComponent(Id)}`, { method: 'GET' });
+            let serverUrbanCatchmentsArray = await serverUrbanCatchments.json();
+
+            let userCatchmentsArray = serverUrbanCatchmentsArray.map((catchmentObj) => {
+
+                return (new Catchment(null, catchmentObj.CatchmentDescription,
+                    Number(catchmentObj.ImperviousPercent),
+                    Number(catchmentObj.SlopePercent),
+                    Number(catchmentObj.CurveNumber),
+                    Number(catchmentObj.FlowLength)))
+            })
+
+
+            setUrbanCatchments(userCatchmentsArray);
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    const alertStyle = {
+        display: 'block',
+        backgroundColor: theme.palette.secondary.main,
+    }
 
     const tabStyle = {
         bgcolor: 'primary.main',
@@ -166,6 +244,10 @@ const [paginatedHydrographs, setPaginatedHydrographs] = useState(null);
     console.log(inputsRef)
 
   }
+
+      // grab form inputs without setting states for every single field
+    // useRef to store values
+  const inputsRef = useRef({});
   */
   const draggableCatchmentMarkup = (
     <Draggable id='addCatchment'>
@@ -183,19 +265,30 @@ const [paginatedHydrographs, setPaginatedHydrographs] = useState(null);
     </Draggable>
   );
 
-    function handleHydrographClick(hydrographId) {
-        console.log(hydrographId)
-        console.log(hydrgraphRefTable[hydrographId])
+    function handlePickerClick(objectId, objectType) {
 
-        let selectedHydrograph = hydrgraphRefTable[hydrographId];
-
-        setCurrentHydrograph(selectedHydrograph)
+        switch (objectType) {
+            case 'storm':
+                let selectedStorm = stormsTable[objectId];
+                setCurrentStorm(selectedStorm)
+                break;
+            case 'catchment':
+                let selectedCatchment = catchmentTable[objectId]
+                setCurrentCatchment(selectedCatchment)
+                break;
+            case 'hydrograph':
+                let selectedHydrograph = stormsTable[objectId]
+                setCurrentHydrograph(selectedHydrograph)
+                break;
+        }   
     }
+
+
+
 
   function handleContextMenu(event) {
     event.preventDefault();
     setEditing(false);
-      console.log(event.target.dataset.type)
     
     setContextMenu(false);
     const {over} = event;
@@ -214,18 +307,96 @@ const [paginatedHydrographs, setPaginatedHydrographs] = useState(null);
   }
 
   function handleAddCatchment() {
-    let id = catchments;
-    setCatchments(catchments + 1);
-    let newCatchment = new Catchment(id, 'Urban Catchment')
+    let newCatchment = new Catchment(null, 'Urban Catchment')
     setCurrentCatchment(newCatchment);
+
   } 
   
-  async function handleAddStorm() {
-    let id = storms;
-    setStorms(storms + 1);
-    let newStorm = new Storm(id, 'Default Storm')
+  function handleAddStorm() {
+    let newStorm = new Storm(null, 'Default Storm')
     setCurrentStorm(newStorm);
-  }
+    }
+
+
+    function submissionMessageController() {
+        switch (submissionStatus) {
+            case null:
+                return null;
+                break;
+            case 'Success':
+                return <Alert style={alertStyle} severity="success">Data saved.</Alert>
+                break;
+            case 'Error':
+                return <Alert style={alertStyle} severity="error">Input error - please check your inputs.</Alert>
+                break;
+            case 'Server Error':
+                return < Alert style={alertStyle} severity="error" >Server error: service temporarily unavailable.</Alert>;
+                break;
+            default:
+                return <Alert style={alertStyle} severity="error">Something unexpected occured. Please try again later.</Alert>
+        }
+    }
+
+
+
+
+
+    async function handleSaveStorm(stormObject) {
+        handleEditStorm(stormObject)
+        let submissionStorm = {
+            Time: currentStorm.timeData.toString(),
+            Value: currentStorm.precipitationDataIntensity.toString(),
+            UserId: Id,
+            StormDescription: currentStorm.name.toString(),
+            DateInserted: (new Date()).toISOString().split('T')[0]
+        }
+
+        try {
+            let Stormsubmission = await fetch('/api/Storms/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(submissionStorm) })
+            console.log(Stormsubmission)
+            if (Stormsubmission.status === 200) {
+                setSubmissionStatus('Success')
+                await getStorms()
+            } else if (Stormsubmission.status === 400) {
+                setSubmissionStatus('Error')
+            } else {
+                setSubmissionStatus('Server Error')
+            }
+        } catch (error) {
+            console.log(error)
+        }
+        
+    }
+
+    async function handleSaveUrbanCatchment(catchmentObject) {
+        handleEditCatchment(catchmentObject)
+        let submissionCatchment = {
+            UserId: Id,
+            AreaHectares: currentCatchment.areaHectares.toString(),
+            ImperviousPercent: currentCatchment.imperviousPercent.toString(),
+            SlopePercent: currentCatchment.slopePercent.toString(),
+            CurveNumber: currentCatchment.curveNumber.toString(),
+            FlowLength: currentCatchment.flowLength.toString(),
+            CatchmentDescription: currentCatchment.name.toString(),
+            DateInserted: (new Date()).toISOString().split('T')[0]
+        }
+
+        try {
+            let catchmentSubmission = await fetch('/api/UrbanCatchments/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(submissionCatchment) })
+
+            if (catchmentSubmission.status === 200) {
+                setSubmissionStatus('Success')
+                await getUrbanCatchments();
+            } else if (catchmentSubmission.status === 400) {
+                setSubmissionStatus('Error')
+            } else {
+                setSubmissionStatus('Server Error')
+            }
+        } catch (error) {
+            console.log(error)
+        }
+        
+    }
 
   function handleEditCatchment(catchmentObject) {
       let currentID = catchmentObject.id;
@@ -241,6 +412,7 @@ const [paginatedHydrographs, setPaginatedHydrographs] = useState(null);
 
 
     function handleEditStorm(stormObject) {
+
         let currentID = stormObject.id;
         let intensity;
         let time;
@@ -313,6 +485,7 @@ const [paginatedHydrographs, setPaginatedHydrographs] = useState(null);
     (over ? handlerPick ? handlerPick() : null : null)
   }
 
+   
 
   const LineData = currentHydrograph ?  {
     labels: typeof currentHydrograph.Time === 'string' ? currentHydrograph.Time.split(',') : currentHydrograph.Time,
@@ -351,8 +524,6 @@ return (
       <Box sx = {HydroSimViewStyle} onClick={handleOnClick}>
            <Sidebar
                 modalText={<Markdown>{Hydrosim}</Markdown> }
-                accordionClick={handleHydrographClick}
-                totals={[{ 'catchments': catchments }, { 'storms': storms }]}
                 title={'HydroSim' }
                 firstChild={draggableCatchmentMarkup}
                 secondChild={draggableStormMarkup}
@@ -364,12 +535,12 @@ return (
                 <Box height='70%' sx={{ display: 'flex', columnGap: '3rem', alignItems:'center' }}>
                     <Fade in={checkedCatch} appear={false }>
                         <Box>
-                            {currentCatchment ? <EditMenu editSubmission={handleEditCatchment} editingObject={currentCatchment}></EditMenu> : null}
+                            {currentCatchment ? <EditMenu editSubmission={handleEditCatchment} editingObject={currentCatchment} saveEdits={handleSaveUrbanCatchment}></EditMenu> : null}
                         </Box>
                     </Fade>
                     <Fade in={checkedStorm}>
                         <Box>
-                            {currentStorm ? <EditMenu editSubmission={handleEditStorm} editingObject={currentStorm}></EditMenu> : null}
+                            {currentStorm ? <EditMenu editSubmission={handleEditStorm} editingObject={currentStorm} saveEdits={handleSaveStorm}></EditMenu> : null}
                         </Box>
                     </Fade>
                     
@@ -414,25 +585,35 @@ return (
             <Box sx={tabStyle} >
                 <Fade in={checkedGraph}>
                     <Box sx={{ display: 'flex', flexDirection:'column', rowGap:'2rem' } }>
-                        {currentHydrograph ? <LineChart XLabel='Time (minutes)' YLabel='Runoff (cms)' Context='Simulated runoff hydrograph based on provided storm and catchment' chartData={LineData}
+                        {currentHydrograph ? <LineChart XLabel='Time (minutes)' YLabel='Runoff (cms)' Context='Runoff Hydrograph' chartData={LineData}
                             header={<><Autocomplete
+                                value={currentStorm.name}
+                                onChange={(e) => {
+                                    setCurrentStorm(stormsTable[e.target.innerText] ? stormsTable[e.target.innerText] : currentStorm)
+                                }
+                                  }
                                 disablePortal
                                 id="combo-box-storms"
-                                options={[currentStorm.name]}
+                                options={storms ? stormsTable.map(storm => storm.name) : ['']}
                                 sx={{ width: '45%' }}
                                 renderInput={(params) => <TextField labelColor='secondary' color='secondary' sx={{ color: 'secondary.main', backgroundColor: 'primary.main' }} {...params} label="Storm" />} />
                                 on<Autocomplete
+                                    value={currentCatchment.name}
+                                    onChange={(e) => {
+                                        setCurrentCatchment(urbanCatchmentsTable[e.target.innerText] ? urbanCatchmentsTable[e.target.innerText] : currentCatchment)
+                                    }
+                                    }
                                 disablePortal
                                 id="combo-box-catchments"
-                                options={[currentCatchment.name]}
+                                    options={urbanCatchments ? urbanCatchmentsTable.map(urbanCatchment => urbanCatchment.name) : ['']}
                                 sx={{ width: '45%' }}
                                 renderInput={(params) => <TextField labelColor='secondary' color='secondary' sx={{ color: 'secondary.main', backgroundColor: 'primary.main' }} {...params} label="Catchment" />}
                                 /></>} /> : null}
-                                
+                                //// NEED TO USE OBJECT KEYS NOT MAP
                         
                     </Box>
                 </Fade>
-                
+                {submissionMessageController()}
         </Box>
       </Box>
     </DndContext>

@@ -105,7 +105,7 @@ function StormTabView( { Id, Storms} ) {
                 return null;
                 break;
             case 'Success':
-                return <Alert style={alertStyle} severity="success">Storm data saved.</Alert>
+                return <Alert style={alertStyle} severity="success">Data saved.</Alert>
                 break;  
             case 'Error':
                 return <Alert style={alertStyle} severity="error">Input error - please check your inputs.</Alert>

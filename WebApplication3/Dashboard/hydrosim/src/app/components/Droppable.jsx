@@ -15,19 +15,17 @@ export function Droppable(props) {
   let draggableCurrentStorm = props.draggableCurrentStorm;
   let draggableCurrentCatchment = props.draggableCurrentCatchment;
 
-    const style = {
-        border: isOver ? '0.1rem solid rgba(0, 0, 0, 1)' : undefined,
-      backgroundColor: isOver ? 'rgba(0, 0, 0, 1)' : undefined,
-      borderRadius: '1rem',
-    };
-
     const containerStyle = {
+        border: isOver ? '0.1rem solid rgba(0, 0, 0, 1)' : undefined,
+        backgroundColor: isOver ? 'rgba(0, 0, 0, 1)' : undefined,
+        boxShadow: isOver ? 'rgba(0, 0, 0, 0.25) 15px 20px 38px, rgba(0, 0, 0, 0.22) 0px 20px 20px' : undefined,
+        borderRadius: '1rem',
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
         columnGap: '2rem',
         padding: '2rem',
-        width: '45rem',
+        width: '35rem',
         height: '12rem',
         backgroundColor: 'rgba(225, 222, 228, 0.808)',
         borderRadius: '1rem',
@@ -36,11 +34,10 @@ export function Droppable(props) {
   
   
   return (
-    <div ref={setNodeRef} style={style} >
+      <div ref={setNodeRef} style={{display:'flex', justifyContent:'center'} }>
           <div style={containerStyle}>
             <div className={styles.catchmentSlot}> {draggableCurrentCatchment ? draggableCurrentCatchment : <CatchmentIcon style={ { opacity:0.5, borderRadius: '50%',  boxShadow: '0 0 10px 5px gray' } } ></CatchmentIcon>}</div>
             <div className={styles.stormSlot}> {draggableCurrentStorm ? draggableCurrentStorm : <StormIcon style={ { opacity: 0.5, border: 'solid 1px gray', borderRadius: '50%',  boxShadow: '0 0 10px 5px gray'} }></StormIcon>}</div>
-              {(currentCatchment && currentStorm) ? <div className={styles.textSlot}>{currentStorm.name} on <br /> the {currentCatchment.name} catchment.</div > : <div className={styles.textSlot}>Runoff Hydrograph <br />  <br /> Drag & drop both catchment and storm icons to get started!</div> }
       </div>
     </div>
   );
