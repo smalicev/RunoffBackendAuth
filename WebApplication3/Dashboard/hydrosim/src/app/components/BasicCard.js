@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography';
 
 export default function BasicCard({Title, TextInput}) {
     return (
-        <Card sx={{ minWidth: 175,  maxWidth: 325 }}>
+        <Card sx={{ backgroundColor:'secondary.main',minWidth: 175,  maxWidth: 325 }}>
             <CardContent>
                 <Typography variant="h5" component="div">
                     {Title}

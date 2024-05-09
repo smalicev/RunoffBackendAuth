@@ -1,16 +1,13 @@
-
-
 function paginate(list) {
     const SUBLISTLENGTH = 5;
     let totalArray = [];
 
     if (list.length > SUBLISTLENGTH) {
-
-        for (let j = 1; j <= (list.length / SUBLISTLENGTH); j++) {
-            totalArray.push([])
+        for (let j = 1; j <= list.length / SUBLISTLENGTH; j++) {
+            totalArray.push([]);
 
             for (let i = 0; i < SUBLISTLENGTH; i++) {
-                totalArray[j - 1].push(list[i * j])
+                totalArray[j - 1].push(list[i * j]);
             }
         }
     } else {
@@ -25,15 +22,15 @@ function interpolate(xOne, xTwo, yOne, yTwo, xInt) {
 }
 
 function incrementCumulative(cumulativeArray) {
-  let incrementalArray = [];
-  
-    for (let i = cumulativeArray.length - 1; i > 0; i --) {
-      incrementalArray.push(cumulativeArray[i] - cumulativeArray[i-1])
+    let incrementalArray = [];
+
+    for (let i = cumulativeArray.length - 1; i > 0; i--) {
+        incrementalArray.push(cumulativeArray[i] - cumulativeArray[i - 1]);
     }
 
-  incrementalArray.push(cumulativeArray[0])
+    incrementalArray.push(cumulativeArray[0]);
 
-  return incrementalArray.reverse();
+    return incrementalArray.reverse();
 }
 
 function calculateAverage(array) {
@@ -43,40 +40,41 @@ function calculateAverage(array) {
 }
 
 function cumulate(incrementalArray) {
-  let cumulativeArray = [];
+    let cumulativeArray = [];
 
-  incrementalArray.forEach((dataPoint, idx) => {
-    let currentTotal = 0;
+    incrementalArray.forEach((dataPoint, idx) => {
+        let currentTotal = 0;
 
-    for (let i = 0; i <= idx; i ++) {
-      currentTotal += incrementalArray[i]
-    }
+        for (let i = 0; i <= idx; i++) {
+            currentTotal += incrementalArray[i];
+        }
 
-    cumulativeArray.push(currentTotal);
-  })
+        cumulativeArray.push(currentTotal);
+    });
 
-  return cumulativeArray;
+    return cumulativeArray;
 }
 
 function addAllLikeProperties(arrayOfObjects) {
+    let newObject = {};
 
-  let newObject = {}
+    arrayOfObjects.forEach((object, idx) => {
+        for (const property in object) {
+            if (newObject[property] === undefined) {
+                newObject[property] = object[property];
+            } else {
+                newObject[property] += object[property];
+            }
+        }
+    });
 
-  arrayOfObjects.forEach((object, idx) => {
-
-    for (const property in object) {
-
-      if (newObject[property] === undefined) {
-        newObject[property] = object[property]
-      } else {
-        newObject[property] += object[property]
-      }
-    }
-  })
-
-  return newObject;
-
+    return newObject;
 }
 
-
-export { cumulate, incrementCumulative, calculateAverage, addAllLikeProperties, paginate }
+export {
+    cumulate,
+    incrementCumulative,
+    calculateAverage,
+    addAllLikeProperties,
+    paginate,
+};

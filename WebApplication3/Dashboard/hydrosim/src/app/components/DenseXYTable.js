@@ -12,24 +12,25 @@ export default function DenseXYTable({ XLabel, YLabel, XData, YData }) {
 
     const theme = useTheme();
     return (
-        <TableContainer sx={{ minWidth: 150, maxWidth: 250 }} component={Paper}>
+        <TableContainer sx={{ padding: '1rem', backgroundColor:'primary.main', minWidth: 150, maxWidth: 250 }} component={Paper}>
             <Table sx={{ minWidth: 150, maxWidth: 250 }} size="small" aria-label="a dense table">
                 <TableHead>
                     <TableRow>
-                        <TableCell>{XLabel}</TableCell>
-                        <TableCell align="right">{YLabel}</TableCell>
+                        <TableCell sx={{ borderColor: 'black' }}>{XLabel}</TableCell>
+                        <TableCell align="right" sx={{ borderColor: 'black' }}>{YLabel}</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {XData.map((row,idx) => (
                         <TableRow
+
                             key={XData[idx]}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
-                            <TableCell component="th" scope="row">
+                            <TableCell sx={{borderColor:'black'}} component="th" scope="row">
                                 {XData[idx]}
                             </TableCell>
-                            <TableCell align="right">{YData[idx]}</TableCell>
+                            <TableCell sx={{ borderColor: 'black' }} align="right">{YData[idx]}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

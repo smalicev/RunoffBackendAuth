@@ -19,6 +19,7 @@
     "@next/mdx": "^14.2.3",
     "@szhsin/react-accordion": "^1.2.3",
     "chart.js": "^4.4.1",
+    "mdb-react-ui-kit": "^8.0.0",
     "next": "14.1.0",
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
@@ -27,8 +28,11 @@
     "react-markdown": "^9.0.1"
   },
   "devDependencies": {
-    "eslint": "^8",
+    "@eslint/js": "^9.2.0",
+    "eslint": "^8.57.0",
     "eslint-config-next": "14.1.0",
+    "eslint-plugin-react": "^7.34.1",
+    "globals": "^15.1.0",
     "raw-loader": "^4.0.2"
   }
 }
