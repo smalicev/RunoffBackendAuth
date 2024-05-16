@@ -17,7 +17,9 @@ class Hydrograph {
         );
         this.Value = null;
         this.Time = null;
-        this.convolutions = this.convolute(this.linearIUH());
+        this.convolutions = this.catchment.constructor.name === 'UrbanCatchment' ? this.convoluteUrban(
+            this.instantaneousUnitHydrographs[this.catchment.constructor.name]()) : this.convoluteRural(
+                this.instantaneousUnitHydrographs[this.catchment.constructor.name]());
         this.name = `${storm.name} on ${catchment.name}`;
         this.generateTimeSeriesandIncRunoff();
         this.id = id;
@@ -35,9 +37,66 @@ class Hydrograph {
             (this.catchment.areaHectares * 10000); // metres cubed
     }
 
+    instantaneousUnitHydrographs = {
+        UrbanCatchment: () => {
+            return {
+                prePeakFlowFunc: (peakFlow) =>
+                    (this.storm.timeStep / this.storm.timeStep) * peakFlow, // I set peak time to computational time step - therefore peak flow is found immediately - no need for this func
+                peakFlowFunc: (peakFlow) =>
+                    (peakFlow -
+                        Math.exp(
+                            -(this.storm.timeStep / this.kinematicWaveK)
+                        )) /
+                    this.storm.timeStep,
+                postPeakFlowFunc: (peakFlow, time) =>
+                    peakFlow *
+                    Math.exp(
+                        -(time - this.storm.timeStep) / this.kinematicWaveK
+                    ),
+            };
+        },
+        RuralCatchment:() => {
+            return {
+                prePeakFlowFunc: (peakFlow) => {
+                    return (peakFlow *
+                        ((this.storm.timeStep / this.catchment.timeToPeak) **
+                            (this.catchment.numberOfReservoirs - 1) *
+                            Math.exp(
+                                (1 - this.catchment.numberOfReservoirs) *
+                                (this.storm.timeStep /
+                                    this.catchment.timeToPeak -
+                                    1)
+                            )))
+                },
+                peakFlowFunc: (peakFlow) => {
+                    let result = (peakFlow *
+                        ((this.storm.timeStep / this.catchment.timeToPeak) **
+                            (this.catchment.numberOfReservoirs - 1) *
+                            Math.exp(
+                                (1 - this.catchment.numberOfReservoirs) *
+                                (this.storm.timeStep /
+                                    this.catchment.timeToPeak -
+                                    1)
+                            )))
+                    return result;
+                },
+                postPeakFlowFunc: (peakFlow) => {
+                    return (peakFlow *
+                        ((this.storm.timeStep / this.catchment.timeToPeak) **
+                            (this.catchment.numberOfReservoirs - 1) *
+                            Math.exp(
+                                (1 - this.catchment.numberOfReservoirs) *
+                                (this.storm.timeStep /
+                                    this.catchment.timeToPeak -
+                                    1)
+                            )))
+                },
+            };
+        },
+    };
+
     valuesToIntensity(valueArray) {
         let intensityArray = [];
-        console.log(this.storm.cumulativePrecipitation);
 
         valueArray.forEach((value, idx) => {
             intensityArray.push(value / (this.timeStep / 60));
@@ -49,16 +108,16 @@ class Hydrograph {
     // kinmateic wave k might need a redo
     calcKinematicWaveK() {
         let maxIntensity = Math.max(...this.storm.precipitationDataIntensity);
-        console.log(maxIntensity);
+
         return (
             (this.catchment.flowLength ** 0.6 *
                 this.catchment.roughnessCoeff ** 0.6) /
             (maxIntensity ** 0.4 * (this.catchment.slopePercent / 100) ** 0.3)
         );
     }
-
+    // something is WRONG with scs losses ? negative effective runoff ? for rural catchment
     // the output of this results in the cumulative excess (Pe) at time t... given cumulative precipitation
-    // sometimes, the second or third number is lower than the first - initial abstraction
+    // sometimes, the second or third number is lower than the first - initial abstraction ?
     scsLosses(cumulativePrecipitation) {
         let cumulativeLosses = [];
         let s = this.catchment.sParameter;
@@ -83,21 +142,27 @@ prePeakFlowFunc: (peakFlow) => (this.storm.timeStep/this.storm.timeStep * (peakF
       peakFlowFunc: (peakFlow) => peakFlow * (this.storm.timeStep / this.timeToPeak),
       postPeakFlowFunc: (peakFlow, time) => peakFlow * (Math.exp(-(time - this.storm.timeStep) / this.kinematicWaveK))
 */
-    linearIUH() {
-        return {
-            prePeakFlowFunc: (peakFlow) =>
-                (this.storm.timeStep / this.storm.timeStep) * peakFlow, // I set peak time to computational time step - therefore peak flow is found immediately - no need for this func
-            peakFlowFunc: (peakFlow) =>
-                (peakFlow -
-                    Math.exp(-(this.storm.timeStep / this.kinematicWaveK))) /
-                this.storm.timeStep,
-            postPeakFlowFunc: (peakFlow, time) =>
-                peakFlow *
-                Math.exp(-(time - this.storm.timeStep) / this.kinematicWaveK),
-        };
+
+    convoluteRural(unitHydrograph) {
+        console.log(this.effectiveRunoff)
+        let allHydrographs = [];
+
+        this.effectiveRunoff.forEach((dataPoint, idx) => {
+            let individualHydrograph = {};
+            let hydrographTime = this.timeStep;
+
+            individualHydrograph[this.timeStep * (idx + 1)] =
+                unitHydrograph.peakFlowFunc(dataPoint);
+
+            allHydrographs.push(individualHydrograph);
+        });
+
+        return addAllLikeProperties(allHydrographs);
     }
 
-    convolute(unitHydrograph) {
+    convoluteUrban(unitHydrograph) {
+        console.log(this.effectiveRunoff, 'effRunoff')
+        
         const MINIMUM_RUNOFF = 0.005;
         let allHydrographs = [];
 
@@ -112,7 +177,7 @@ prePeakFlowFunc: (peakFlow) => (this.storm.timeStep/this.storm.timeStep * (peakF
             while (
                 unitHydrograph.postPeakFlowFunc(dataPoint, hydrographTime) >
                     MINIMUM_RUNOFF &&
-                iterations < 1000
+                iterations < 500
             ) {
                 iterations++;
                 individualHydrograph[

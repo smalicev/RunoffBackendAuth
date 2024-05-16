@@ -7,7 +7,7 @@ import { Draggable } from "./Draggable.jsx";
 import { Droppable } from "./Droppable.jsx";
 import Sidebar from "./Sidebar.js";
 import Storm from "../storm.mjs";
-import Catchment from "../catchment.mjs";
+import { Catchment, RuralCatchment, UrbanCatchment } from "../catchment.mjs";
 import Chart from "chart.js/auto";
 import {
     LinearScale,
@@ -34,6 +34,7 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Alert from "@mui/material/Alert";
 import { Select } from "@mui/material";
+import DraggableIcon from "./DraggableIcon"
 
 Chart.register(LinearScale);
 Chart.register(CategoryScale);
@@ -49,7 +50,7 @@ function HydroSimView({ Id, Hydrographs, Catchments, Storms }) {
     const [currentStorm, setCurrentStorm] = useState(null);
     const [currentCatchment, setCurrentCatchment] = useState(null);
     const [currentHydrograph, setCurrentHydrograph] = useState(null);
-    const [contextMenuOn, setContextMenu] = useState(false);
+    // const [contextMenuOn, setContextMenu] = useState(false);
     const [context, setCurrentContext] = useState(false);
     const [mousePosition, setMousePosition] = useState({ x: null, y: null });
     const [hydrographs, setHydrographs] = useState(Hydrographs);
@@ -58,7 +59,7 @@ function HydroSimView({ Id, Hydrographs, Catchments, Storms }) {
     const [submissionStatus, setSubmissionStatus] = useState(null);
     const [inputStatus, setInputStatus] = useState(null);
     const theme = useTheme();
-
+    const icons = ['UrbanCatchment', 'Storm', 'RuralCatchment']
     function hydrographsToRefObject(hydrographs) {
         let refObject = {};
 
@@ -109,7 +110,6 @@ function HydroSimView({ Id, Hydrographs, Catchments, Storms }) {
 
         arrayOfObjects.forEach((object) => {
             if (object.CatchmentDescription || object.areaHectares) {
-                console.log("cathments");
                 refObject[
                     object.CatchmentDescription
                         ? object.CatchmentDescription
@@ -246,6 +246,7 @@ function HydroSimView({ Id, Hydrographs, Catchments, Storms }) {
         textShadow: "0px 0px 2px rgba(0, 0, 0, 0.26)",
         boxShadow: "rgba(0, 0, 0, 0.25) 0px 28px 20px",
         minHeight: "70vh",
+        minWidth:'29rem',
         width: "20%",
         height: '100%',
         padding: "2rem",
@@ -283,50 +284,6 @@ function HydroSimView({ Id, Hydrographs, Catchments, Storms }) {
     // useRef to store values
   const inputsRef = useRef({});
   */
-    const draggableCatchmentMarkup = (
-        <Draggable id="addCatchment">
-            <Hoverable
-                defaultStyle={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    border: "0.2rem solid rgba(0,0,0,0)",
-                }}
-                style={{
-                    border: "0.2rem solid black",
-                    borderRadius: "50%",
-                    boxShadow:
-                        "rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px",
-                }}
-            >
-                <CatchmentIcon
-                    style={{ borderRadius: "50%", zIndex: 15 }}
-                ></CatchmentIcon>
-            </Hoverable>
-        </Draggable>
-    );
-    const draggableStormMarkup = (
-        <Draggable id="addStorm">
-            <Hoverable
-                defaultStyle={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    border: "0.2rem solid rgba(0,0,0,0)",
-                }}
-                style={{
-                    border: "0.2rem solid black",
-                    borderRadius: "50%",
-                    boxShadow:
-                        "rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px",
-                }}
-            >
-                <StormIcon
-                    style={{ borderRadius: "50%", zIndex: 15 }}
-                ></StormIcon>
-            </Hoverable>
-        </Draggable>
-    );
 
     function handlePickerClick(objectId, objectType) {
         switch (objectType) {
@@ -344,7 +301,7 @@ function HydroSimView({ Id, Hydrographs, Catchments, Storms }) {
                 break;
         }
     }
-
+    /*
     function handleContextMenu(event) {
         event.preventDefault();
         setEditing(false);
@@ -363,10 +320,17 @@ function HydroSimView({ Id, Hydrographs, Catchments, Storms }) {
         } else {
         }
     }
+    */
 
-    async function handleAddCatchment() {
-        let newCatchment = new Catchment(null, "New Urban Catchment");
+    async function handleAddUrbanCatchment() {
+        let newCatchment = new UrbanCatchment(null, "New Urban Catchment");
         newCatchment.id = await handleSaveUrbanCatchment(newCatchment);
+        setCurrentCatchment(newCatchment);
+    }
+
+    async function handleAddRuralCatchment() {
+        let newCatchment = new RuralCatchment(null, "New Rural Catchment");
+        // newCatchment.id = await handleSaveUrbanCatchment(newCatchment);
         setCurrentCatchment(newCatchment);
     }
 
@@ -539,7 +503,7 @@ function HydroSimView({ Id, Hydrographs, Catchments, Storms }) {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(submissionStorm),
                 });
-                console.log(Stormsubmission);
+
                 if (Stormsubmission.status === 200 || Stormsubmission.status === 204) {
                     setSubmissionStatus("Success");
                     await getStorms();
@@ -705,6 +669,7 @@ function HydroSimView({ Id, Hydrographs, Catchments, Storms }) {
     }
 
     function handleOnClick(event) {
+        /*
         if (event.target.className !== "contextMenu" && contextMenuOn) {
             setContextMenu(false);
         }
@@ -721,6 +686,7 @@ function HydroSimView({ Id, Hydrographs, Catchments, Storms }) {
                 setCurrentStorm(null);
             }
         }
+        */
     }
 
     function handleDragStart(event) {
@@ -730,13 +696,14 @@ function HydroSimView({ Id, Hydrographs, Catchments, Storms }) {
     function handleDragEnd(event) {
         const { over } = event;
         let handlerPick = null;
+        console.log(event.active.id);
 
-        if (over === null && event.active.id.slice(0, 5) === "storm") {
+        if (over === null && event.active.id === "Storm") {
             setCurrentStorm(null);
             return;
         } else if (
             over === null &&
-            event.active.id.slice(0, 9) === "catchment"
+            (event.active.id === "UrbanCatchment" || event.active.id === "RuralCatchment" )
         ) {
             setCurrentCatchment(null);
             return;
@@ -744,8 +711,10 @@ function HydroSimView({ Id, Hydrographs, Catchments, Storms }) {
 
         if (event.active.id === "addStorm") {
             handlerPick = handleAddStorm;
-        } else if (event.active.id === "addCatchment") {
-            handlerPick = handleAddCatchment;
+        } else if (event.active.id === "addUrbanCatchment") {
+            handlerPick = handleAddUrbanCatchment;
+        } else if (event.active.id === 'addRuralCatchment') {
+            handlerPick = handleAddRuralCatchment;
         }
 
         setParent(over ? over.id : null);
@@ -801,8 +770,10 @@ function HydroSimView({ Id, Hydrographs, Catchments, Storms }) {
                 <Sidebar
                     modalText={<Markdown>{Hydrosim}</Markdown>}
                     title={"HydroSim"}
-                    firstChild={draggableCatchmentMarkup}
-                    secondChild={draggableStormMarkup}
+                    tools={
+                        icons.map((name,idx) => {
+                            return <DraggableIcon key={idx} type='add' name={name}></DraggableIcon>
+                        })}
                     DataObjectArray={
                         hydrographs
                             ? hydrographs
@@ -811,10 +782,8 @@ function HydroSimView({ Id, Hydrographs, Catchments, Storms }) {
                               : []
                     }
                 ></Sidebar>
-
                 <Box
                     color="primary.main"
-                    onContextMenu={handleContextMenu}
                     sx={{
                         display: "flex",
                         height: "100%",
@@ -865,87 +834,16 @@ function HydroSimView({ Id, Hydrographs, Catchments, Storms }) {
                         currentCatchment={currentCatchment}
                         draggableCurrentStorm={
                             currentStorm ? (
-                                <Hoverable
-                                    defaultStyle={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        border: "0.2rem solid rgba(0,0,0,0)",
-                                    }}
-                                    style={{
-                                        border: "0.2rem solid black",
-                                        borderRadius: "50%",
-                                        boxShadow:
-                                            "rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px",
-                                    }}
-                                >
-                                    <Draggable
-                                        data-type="storm"
-                                        id={"storm-" + currentStorm.id}
-                                    >
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                            }}
-                                            data-type="storm"
-                                        >
-                                            <StormIcon
-                                                data-type="storm"
-                                                style={{ borderRadius: "50%" }}
-                                            ></StormIcon>
-                                        </div>
-                                    </Draggable>
-                                </Hoverable>
+                                <DraggableIcon name='Storm'></DraggableIcon>
                             ) : null
                         }
                         id={"0"}
                         draggableCurrentCatchment={
                             currentCatchment ? (
-                                <Hoverable
-                                    defaultStyle={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        border: "0.2rem solid rgba(0,0,0,0)",
-                                    }}
-                                    style={{
-                                        border: "0.2rem solid black",
-                                        borderRadius: "50%",
-                                        boxShadow:
-                                            "rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px",
-                                    }}
-                                >
-                                    <Draggable
-                                        data-type="catchment"
-                                        id={"catchment-" + currentCatchment.id}
-                                    >
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                            }}
-                                            data-type="catchment"
-                                        >
-                                            <CatchmentIcon
-                                                data-type="catchment"
-                                                style={{ borderRadius: "50%" }}
-                                            ></CatchmentIcon>
-                                        </div>
-                                    </Draggable>
-                                </Hoverable>
+                                <DraggableIcon name={currentCatchment.constructor.name}></DraggableIcon>
                             ) : null
                         }
                     ></Droppable>
-
-                    {contextMenuOn ? (
-                        <ContextMenu
-                            contextObject={context}
-                            mousePosition={mousePosition}
-                        ></ContextMenu>
-                    ) : null}
                 </Box>
                 <Box sx={tabStyle}>
                     <Fade in={checkedGraph}>
@@ -1018,7 +916,7 @@ function HydroSimView({ Id, Hydrographs, Catchments, Storms }) {
                                                         : ""
                                                 }
                                           onChange={(e, selectedOption) => {
-                                              console.log(selectedOption)
+                                         
                                                     setCurrentCatchment(
                                                         catchmentsTable[
                                                             selectedOption.id

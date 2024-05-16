@@ -7,9 +7,11 @@ import FormControl from "@mui/material/FormControl";
 import Paper from "@mui/material/Paper";
 import Image from "next/image";
 import save from "../../../public/save.svg";
+import add from "../../../public/add.svg";
 import deletesvg from "../../../public/delete.svg";
 import { useTheme } from "@mui/material/styles";
 import { Typography } from "@mui/material";
+import Box from "@mui/material/Box";
 function EditMenu({
     editingObject,
     editSubmission,
@@ -24,7 +26,6 @@ function EditMenu({
 
     useEffect(() => {
         setFormStateObject(editingObject);
-        console.log(formStateObject)
     }, [editingObject]);
 
     let privateProperties = [
@@ -35,16 +36,23 @@ function EditMenu({
         "timeToPeak",
         "id",
         "precipitationData",
+        "perviousArea",
+        "timeOfConcentration",
+        "numberOfReservoirs",
+        "airportMethod",
+        "bransbyWilliamsMethod"
     ];
     let publicNames = {
         name: "Name",
-        precipitationDataIntensity: "Precipitation (intensity - mm/hr)",
+        precipitationDataIntensity: "Precipitation (intensity - mm/hrs)",
         timeData: "Time series (minutes)",
         areaHectares: "Area (hectares)",
         imperviousPercent: "Percent Impervious (%)",
         slopePercent: "Slope Percent (%)",
         curveNumber: "SCS Curve Number",
         flowLength: "Flow length (m)",
+        initialAbstraction: 'Initial Abstraction (mm)',
+        runoffCoefficient: 'Runoff Coefficient (0 - 1)'
     };
 
     const EditMenuStyle = {
@@ -120,52 +128,60 @@ function EditMenu({
                         }
                     }
                 )}
-                <Button
-                    fullWidth={true}
-                    color="secondary"
-                    variant="contained"
-            onClick={() => {
-                      console.log(formStateObject)
-                        editSubmission(formStateObject);
-                        editButton(formStateObject);
-                    }}
-                    type="button"
-                >
-                    SUBMIT CHANGES {" "}
-                </Button>
-                <Button
-                    color="secondary"
-                    variant="contained"
-                    onClick={() => {
-                        editSubmission(formStateObject);
-                        saveEdits(formStateObject);
-                    }}
-                    type="button"
-                >
-                    SAVE AS NEW {"     "}
-                    <Image
-                        src={save}
-                        height="10%"
-                        width="10%"
-                        alt="save icon"
-                    />
-                </Button>
-                <Button
-                    color="secondary"
-                    variant="contained"
-                    onClick={() => {
-                        deleteButton(formStateObject);
-                    }}
-                    type="button"
-                >
-                    DELETE {"     "}
-                    <Image
-                        src={deletesvg}
-                        height="10%"
-                        width="10%"
-                        alt="save icon"
-                    />
-                </Button>
+                <Box sx={{ width: '100%', display: 'flex', flexDirection:'row', justifyContent:'space-evenly'} }>
+                    <Button
+                        color="secondary"
+                        variant="contained"
+                        onClick={() => {
+                            console.log(formStateObject)
+                            editSubmission(formStateObject);
+                            editButton(formStateObject);
+                        }}
+                        type="button"
+                    >
+                        
+                        <Image
+                            src={save}
+                            height="10%"
+                            width="10%"
+                            alt="save icon"
+                        />
+                    </Button>
+                    <Button
+                        color="secondary"
+                        variant="contained"
+                        onClick={() => {
+                            editSubmission(formStateObject);
+                            saveEdits(formStateObject);
+                        }}
+                        type="button"
+                    >
+                        NEW{"     "}
+                        <Image
+                            src={add}
+                            height="10%"
+                            width="10%"
+                            alt="add icon"
+                        />
+                    </Button>
+                    <Button
+                        color="secondary"
+                        variant="contained"
+                        onClick={() => {
+                            deleteButton(formStateObject);
+                        }}
+                        type="button"
+                    >
+                        {"     "}
+                        <Image
+                            src={deletesvg}
+                            height="10%"
+                            width="10%"
+                            alt="delete icon"
+                        />
+                    </Button>
+                </Box>
+                
             </form>
         </Paper>
     );

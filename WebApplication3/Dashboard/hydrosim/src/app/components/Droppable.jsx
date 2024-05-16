@@ -36,8 +36,8 @@ export function Droppable(props) {
   return (
       <div ref={setNodeRef} style={{display:'flex', justifyContent:'center'} }>
           <div style={containerStyle}>
-            <div className={styles.catchmentSlot}> {draggableCurrentCatchment ? draggableCurrentCatchment : <CatchmentIcon style={ { opacity:0.5, borderRadius: '50%',  boxShadow: '0 0 10px 5px gray' } } ></CatchmentIcon>}</div>
-            <div className={styles.stormSlot}> {draggableCurrentStorm ? draggableCurrentStorm : <StormIcon style={ { opacity: 0.5, border: 'solid 1px gray', borderRadius: '50%',  boxShadow: '0 0 10px 5px gray'} }></StormIcon>}</div>
+              <div className={styles.catchmentSlot}> {draggableCurrentCatchment ? draggableCurrentCatchment : <CatchmentIcon empty={true}></CatchmentIcon>}</div>
+              <div className={styles.stormSlot}> {draggableCurrentStorm ? draggableCurrentStorm : <StormIcon empty={true}></StormIcon>}</div>
       </div>
     </div>
   );

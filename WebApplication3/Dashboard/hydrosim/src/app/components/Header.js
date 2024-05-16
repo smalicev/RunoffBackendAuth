@@ -15,11 +15,10 @@ function Header({ loginState, loginButton, accountViewButton, appViews, setView,
     const headerStyle = {
         display: 'flex',
         justifyContent: 'space-around',
-        width: '100%',
+        minWidth: '100%',
         alignItems: 'center',
         boxShadow: 'rgba(0, 0, 0, 0.25) 5px 0px 6px',
         zIndex: '5',
-
     }
 
     return (

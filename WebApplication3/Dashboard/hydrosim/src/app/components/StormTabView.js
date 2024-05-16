@@ -34,7 +34,7 @@ Chart.register(CategoryScale);
 function StormTabView({ Id, Storms }) {
     const [parent, setParent] = useState(null);
     const [editingModeOn, setEditing] = useState(false);
-    const [contextMenuOn, setContextMenu] = useState(false);
+    // const [contextMenuOn, setContextMenu] = useState(false);
     const [context, setCurrentContext] = useState(false);
 
     const [currentStorm, setCurrentStorm] = useState(null);
@@ -219,7 +219,8 @@ function StormTabView({ Id, Storms }) {
     }
 
     function handleOnClick(event) {
-        if (event.target.className !== "contextMenu" && contextMenuOn) {
+
+        /*if (event.target.className !== "contextMenu" && contextMenuOn) {
             setContextMenu(false);
         }
         if (event.target.className === "contextMenu edit") {
@@ -234,6 +235,7 @@ function StormTabView({ Id, Storms }) {
                 setCurrentStorm(null);
             }
         }
+        */
     }
 
     const LineData = currentStorm

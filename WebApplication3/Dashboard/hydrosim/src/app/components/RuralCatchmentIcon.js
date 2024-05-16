@@ -1,8 +1,8 @@
 import React from "react";
-import catchmentIcon from "../../../public/catchment.svg"
+import ruralCatchmentIcon from "../../../public/rural.svg"
 import Image from 'next/image'
 
-export default function CatchmentIcon({empty }) {
+export default function RuralCatchmentIcon({empty }) {
 
     const style = {
         opacity: (empty ? 0.5 : 1),
@@ -13,11 +13,11 @@ export default function CatchmentIcon({empty }) {
     
   return (<>
     <Image data-type='catchment'
-      src={catchmentIcon}
+          src={ruralCatchmentIcon}
       height={70}
           width={70}
           style={style }
-      alt = 'A logo of an urban street with buildings and other infrastructure'/>
+      alt = 'A logo of a rural area'/>
     </>
   );
 }

@@ -160,7 +160,7 @@ function ResponsiveAppBar({
                                             variant={"h5"}
                                         >
                                             {" "}
-                                            CREATE | SIMULATE | MODEL | SHARE{" "}
+                                            CREATE | MODEL | SIMULATE | SHARE{" "}
                                         </Typography>
                                     </Paper>
                                     <Paper
@@ -382,8 +382,7 @@ function ResponsiveAppBar({
                                     alignItems: "center",
                                 }}
                                 size="small"
-                            >
-                                SIGN OUT{" "}
+                            >SIGN OUT{" "}
                                 <Image
                                     src={Logout}
                                     height={25}
@@ -395,7 +394,7 @@ function ResponsiveAppBar({
                             <Button
                                 color="secondary"
                                 variant="contained"
-                                size="small"
+                                
                                 onClick={loginButton}
                                 style={{
                                     marginLeft: "0.5rem",
@@ -404,9 +403,9 @@ function ResponsiveAppBar({
                                     columnGap: "0.5rem",
                                     textAlign: "center",
                                     alignItems: "center",
-                                }}
-                            >
-                                SIGN IN
+                                    }}
+                                    size="small"
+                            >SIGN IN
                                 <Image
                                     src={Login}
                                     height={25}

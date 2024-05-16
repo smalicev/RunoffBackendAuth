@@ -16,10 +16,10 @@ import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import { red } from "@mui/material/colors";
 import Storm from "./storm.mjs";
-import Catchment from "./catchment.mjs";
+import { Catchment, UrbanCatchment, RuralCatchment } from "./catchment.mjs";
 import Footer from "./components/Footer";
 export default function Home() {
-    const [hasToken, setHasToken] = useState(false);
+    const [hasToken, setHasToken] = useState(true);
     const [userObject, setUserObject] = useState(null);
     const [authResponse, setAuthResponse] = useState(false);
     const [hydrographs, setHydrographs] = useState(null);
@@ -112,7 +112,9 @@ export default function Home() {
         flexDirection: "column",
         bgcolor: "primary.dark",
         color: "primary.contrastText",
-        height: '100%',
+        height: '100vh',
+        overflowX: 'auto',
+        minWidth: '100%'
     };
 
     function loginButton() {

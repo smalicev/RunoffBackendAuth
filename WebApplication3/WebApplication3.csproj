@@ -9372,6 +9372,8 @@
     <Content Include="Dashboard\hydrosim\public\vercel.svg" />
     <Content Include="Dashboard\hydrosim\src\app\components\Account.js" />
     <Content Include="Dashboard\hydrosim\src\app\components\Autocomplete.js" />
+    <Content Include="Dashboard\hydrosim\src\app\components\RuralCatchmentIcon.js" />
+    <Content Include="Dashboard\hydrosim\src\app\components\DraggableIcon.js" />
     <Content Include="Dashboard\hydrosim\src\app\components\Footer.js" />
     <Content Include="Dashboard\hydrosim\src\app\components\ResponsiveAppBar.js" />
     <Content Include="Dashboard\hydrosim\src\app\components\BasicForm.js" />

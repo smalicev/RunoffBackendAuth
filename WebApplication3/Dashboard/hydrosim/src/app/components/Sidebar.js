@@ -10,8 +10,7 @@ import NestedModal from "./NestedModal";
 import Paper from "@mui/material/Paper";
 function Sidebar({
     title,
-    firstChild,
-    secondChild,
+    tools,
     DataObjectArray,
     accordionClick,
     modalText,
@@ -73,8 +72,7 @@ function Sidebar({
                     <>
                         <h4>Tools</h4>
                         <div style={toolStyle}>
-                            {firstChild ? firstChild : null}
-                            {secondChild ? secondChild : null}
+                            {tools ? tools : null }
                         </div>{" "}
                     </>
                 ) : null}
