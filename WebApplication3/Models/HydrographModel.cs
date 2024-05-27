@@ -26,5 +26,6 @@ namespace WebApplication3.Models
 
         [MaxLength(30)]
         public string DateInserted { get; set; }
+
     }
 }
