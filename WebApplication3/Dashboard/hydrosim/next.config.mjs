@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
-  distDir: 'appl',
+distDir: 'appl',
 assetPrefix: '/Dashboard/hydrosim/appl/',
   webpack: (config, options) => {
   config.module.rules.push({

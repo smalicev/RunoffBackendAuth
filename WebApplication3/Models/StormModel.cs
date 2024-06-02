@@ -28,35 +28,47 @@ namespace WebApplication3.Models
     public string DateInserted { get; set; }
 
     [NotMapped]
-    public string name { get; set; }
+    public string Name { get; set; }
+
     [NotMapped]
-    public double[] timeData { get; set; }
+    public double[] TimeData { get; set; }
     [NotMapped]
-    public double[] precipitationDataIntensity { get; set; }
+    public double[] PrecipitationDataIntensity { get; set; }
     [NotMapped]
-    private int timeStep = timeData[1] - timeData[0];
+    public double TimeStep { get; set; }
     [NotMapped]
-    public double[] precipitationData = intensityToValues(precipitationDataIntensity);
+    public double[] PrecipitationData;
     [NotMapped]
-    public double[] cumulativePrecipitation = this.cumulate(precipitationData);
-    public double[] intensityToValues(double[] intensity)
+    public double[] CumulativePrecipitation;
+    public double[] IntensityToValues(double[] intensity)
     {
-      var valueArray = intensity.Select(intensity => intensity * (this.timeStep / 60)).ToArray();
+      var valueArray = intensity.Select(inten => inten * (TimeStep / 60)).ToArray();
 
       return valueArray;
     }
-    public double[] cumulate(double[] incrementalArray)
+    public static double[] Cumulate(double[] incrementalArray)
     {
       List<double> cumulativeValues = new List<double>();
       double currentTotal = 0;
 
       foreach ( double value in incrementalArray )
       {
-        currentTotal = currentTotal + value;
+        currentTotal += value;
         cumulativeValues.Add(currentTotal);
       }
 
       return cumulativeValues.ToArray();
     }
+
+    public Storm(string name, double[] timeData, double[] precipitationDataIntensity)
+    {
+      Name = name;
+      TimeData = timeData;
+      PrecipitationDataIntensity = precipitationDataIntensity;
+      TimeStep = TimeData[1] - TimeData[0];
+      PrecipitationData = IntensityToValues(precipitationDataIntensity);
+      CumulativePrecipitation = Cumulate(PrecipitationData);
     }
+   
+  }
 }

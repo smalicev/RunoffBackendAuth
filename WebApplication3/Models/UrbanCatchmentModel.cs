@@ -1,38 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
 namespace WebApplication3.Models
 {
-    public class UrbanCatchment
+  public class UrbanCatchment : Catchment
+  {
+
+    [Required]
+    public double ImperviousPercent { get; set; }
+
+    [Required]
+    public double SlopePercent { get; set; }
+
+    [Required]
+    public double CurveNumber { get; set; }
+
+    [Required]
+    public double FlowLength { get; set; }
+
+
+    [NotMapped]
+    public double SParameter { get; set; }
+    [NotMapped]
+    public double RoughnessCoefficient { get; set; }
+    [NotMapped]
+    public double TimeToPeak { get; set; }
+    [NotMapped]
+    public double PerviousArea { get; set; }
+
+
+    public UrbanCatchment(string name, double areaHectares, double imperviousPercent, double slopePercent, double curveNumber, double flowLength) : base(name, areaHectares)
     {
-        [Key]
-        public int Id { get; set; }
-
-        [Required, MaxLength(48)]
-        public string AreaHectares { get; set; }
-
-        [Required, MaxLength(6)]
-        public string ImperviousPercent { get; set; }
-
-        [Required, MaxLength(6)]
-        public string SlopePercent { get; set; }
-
-        [Required, MaxLength(3)]
-        public string CurveNumber { get; set; }
-
-        [Required, MaxLength(48)]
-        public string FlowLength { get; set; }
-
-        [Required(ErrorMessage = "User ID is required")]
-        public string UserID { get; set; }
-
-        [MaxLength(48)]
-        public string CatchmentDescription { get; set; }
-
-        [MaxLength(30)]
-        public string DateInserted { get; set; }
+      ImperviousPercent = imperviousPercent;
+      SlopePercent = slopePercent;
+      CurveNumber = curveNumber;
+      FlowLength = flowLength;
+      RoughnessCoefficient = ImperviousPercent <= 20 ? 0.013 : 0.25;
+      SParameter = (254000 / curveNumber) - 254;
     }
+
+  }
 }
