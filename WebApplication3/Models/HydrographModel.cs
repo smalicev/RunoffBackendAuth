@@ -82,16 +82,23 @@ namespace WebApplication3.Models
     /// </summary>
     public convoluteRural()
     {
-      List<Graph> AllUnitHydrographs;
+      List<Dictionary<double,double>> AllUnitHydrographs;
 
             for (var i = 0; i < EffectiveRunoff.Length; i++)
             {
-        Dictionary<double, double> singleGraph = new Dictionary<double, double>;
-        singleGraph.Add((TimeStep * (i + 1)), new InstantaneousUnitResponse(this).NASH(EffectiveRunoff[i]));
-        // algorithm isnt making sense to me... are we pushing ONE point, or an array of points? is it a graph or a point ?
+              Dictionary<double, double> singleGraph = new Dictionary<double, double>;
+              while (new InstantaneousUnitResponse(this).NASH(EffectiveRunoff[i], TimeStep * (i + 1)) > 0.0005)
+              {
+                  
+                singleGraph.Add((TimeStep * (i + 1)), new InstantaneousUnitResponse(this).NASH(EffectiveRunoff[i], TimeStep * (i + 1)));
+
+              }
+
+              AllUnitHydrographs.Add(singleGraph)
+
             }
 
-        }
+        
     
     }
 
@@ -106,26 +113,26 @@ public class InstantaneousUnitResponse
     }
 
   // Urban Catchments
-  public double SCS(Hydrograph hydrograph, string flowState, double flowRate, double time)
+  public double SCS(string flowState, double flowRate, double time)
   {
      if ( flowState == "Post")
     {
-        return (flowRate * Math.Exp( - ( time - hydrograph.TimeStep) / hydrograph.KinematicWaveK));
+        return (flowRate * Math.Exp( - ( time - Hydrograph.TimeStep) / Hydrograph.KinematicWaveK));
     } else if ( flowState == "Pre")
     {
-        return (hydrograph.TimeStep / hydrograph.TimeStep * flowRate);
+        return (Hydrograph.TimeStep / Hydrograph.TimeStep * flowRate);
     } else if ( flowState == "Peak")
     {
-        return (flowRate - Math.Exp(-(hydrograph.TimeStep / hydrograph.KinematicWaveK))) / hydrograph.TimeStep;
+        return (flowRate - Math.Exp(-(Hydrograph.TimeStep / Hydrograph.KinematicWaveK))) / Hydrograph.TimeStep;
     } else
     {
       throw new Exception("Stateless Flow");
     }
   }
     // Rural Catchments
-    public double NASH(double flowRate)
+    public double NASH(double flowRate, double time)
     {
-      return (flowRate * ((Hydrograph.TimeStep / Hydrograph.CurrentCatchment.TimeToPeak);
+      return (flowRate * (Math.Pow((time / Hydrograph.CurrentCatchment.TimeToPeak),(1-Hydrograph.CurrentCatchment.NumberOfReservoirs)) * Math.Exp((1-Hydrograph.CurrentCatchment.NumberOfReservoirs)*((1/Hydrograph.TimeToPeak) - 1))));
     }
 }
 }

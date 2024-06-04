@@ -31,6 +31,9 @@ namespace WebApplication3.Models
     public double TimeToPeak { get; set; }
 
     [NotMapped]
+    public double NumberOfReservoirs { get; set; }
+
+    [NotMapped]
     public double FlowLength { get; set; }
     [NotMapped]
     public double RoughnessCoefficient { get; set; }
