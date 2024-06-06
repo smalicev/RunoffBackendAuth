@@ -14,21 +14,21 @@ namespace WebApplication3.Models
     public double ImperviousPercent { get; set; }
 
     [Required]
-    public double SlopePercent { get; set; }
+    public override double SlopePercent { get; set; }
 
     [Required]
     public double CurveNumber { get; set; }
 
     [Required]
-    public double FlowLength { get; set; }
+    public override double FlowLength { get; set; }
 
 
     [NotMapped]
-    public double SParameter { get; set; }
+    public override double SParameter { get; set; }
     [NotMapped]
-    public double RoughnessCoefficient { get; set; }
+    public override double RoughnessCoefficient { get; set; }
     [NotMapped]
-    public double TimeToPeak { get; set; }
+    public override double TimeToPeak { get; set; }
     [NotMapped]
     public double PerviousArea { get; set; }
 

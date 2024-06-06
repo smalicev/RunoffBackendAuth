@@ -28,19 +28,19 @@ namespace WebApplication3.Models
     public string DateInserted { get; set; }
 
     [NotMapped]
-    public double TimeToPeak { get; set; }
+    public virtual double TimeToPeak { get; set; }
 
     [NotMapped]
     public double NumberOfReservoirs { get; set; }
 
     [NotMapped]
-    public double FlowLength { get; set; }
+    public virtual double FlowLength { get; set; }
     [NotMapped]
-    public double RoughnessCoefficient { get; set; }
+    public virtual double RoughnessCoefficient { get; set; }
     [NotMapped]
-    public double SlopePercent { get; set; }
+    public virtual double SlopePercent { get; set; }
     [NotMapped]
-    public double SParameter { get; set; }
+    public virtual double SParameter { get; set; }
 
     public Catchment (string name, double areaHectares)
     {

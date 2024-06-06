@@ -11,5 +11,7 @@ namespace WebApplication3.Models
     public double[] XValues { get; set; }
 
     public double[] YValues { get; set;}
+
+
   }
 }

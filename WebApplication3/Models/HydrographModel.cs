@@ -13,12 +13,6 @@ namespace WebApplication3.Models
     [Key]
     public int Id { get; set; }
 
-    [MaxLength]
-    public string Time { get; set; }
-
-    [MaxLength]
-    public string Value { get; set; }
-
     [Required(ErrorMessage = "User ID is required")]
     public string UserID { get; set; }
 
@@ -40,8 +34,6 @@ namespace WebApplication3.Models
     [NotMapped]
     public double[] EffectiveRunoff { get; set; }
     [NotMapped]
-    public double[] Convolutions { get; set; }
-    [NotMapped]
     public double TotalRunoff { get; set; }
     [NotMapped]
     public Storm CurrentStorm { get; set; }
@@ -49,15 +41,45 @@ namespace WebApplication3.Models
     public Catchment CurrentCatchment { get; set; }
 
 
-      public Hydrograph(Storm storm, Catchment catchment)
+    public Hydrograph(Storm storm, Catchment catchment)
     {
-    CurrentStorm = storm;
-    CurrentCatchment = catchment;
+      CurrentStorm = storm;
+      CurrentCatchment = catchment;
+      CatchmentName = catchment.Name;
+      StormName = storm.Name;
+      TimeStep = storm.TimeStep;
+      TimeToPeak = CurrentCatchment.TimeToPeak;
+      
+      EffectiveRunoff = SCSLosses();
+
+      if (catchment is UrbanCatchment)
+      {
+        KinematicWaveK = CalculateKinematicWaveK();
+        XValues = ToGraph(convoluteUrban()).Item1;
+        YValues = ToGraph(convoluteUrban()).Item2;
+      } else if (catchment is RuralCatchment)
+      {
+        XValues = ToGraph(convoluteRural()).Item1;
+        YValues = ToGraph(convoluteRural()).Item2;
+      } else
+      {
+        throw new Exception("Unknown Catchment Type");
+      }
+      
+
+
+
+
     }
 
     public double CalculateKinematicWaveK()
     {
-     return (Math.Pow(CurrentCatchment.FlowLength,0.6) * Math.Pow(CurrentCatchment.RoughnessCoefficient, 0.6)) / (Math.Pow(CurrentStorm.PrecipitationDataIntensity.Max(),0.4) * Math.Pow(CurrentCatchment.SlopePercent / 100,0.3));
+      Console.WriteLine("Actualrc: " + string.Join(",", Math.Pow(CurrentCatchment.RoughnessCoefficient, 0.600)));
+      Console.WriteLine("Actualrc: " + string.Join(",", Math.Pow(CurrentCatchment.FlowLength, 0.600)));
+      Console.WriteLine("Actualrc: " + string.Join(",", Math.Pow(CurrentCatchment.SlopePercent, 0.600)));
+      Console.WriteLine("Actualrc: " + string.Join(",", Math.Pow(CurrentStorm.PrecipitationDataIntensity.Max(), 0.600)));
+
+      return (Math.Pow(CurrentCatchment.FlowLength, 0.600) * Math.Pow(CurrentCatchment.RoughnessCoefficient, 0.600)) / (Math.Pow(CurrentStorm.PrecipitationDataIntensity.Max(), 0.400) * Math.Pow(CurrentCatchment.SlopePercent / 100.00, 0.3));
     }
 
     public double[] SCSLosses()
@@ -66,41 +88,117 @@ namespace WebApplication3.Models
 
       double CumulativeLoss(double dataPoint)
       {
-        return Math.Pow(dataPoint - 0.2*CurrentCatchment.SParameter,2) / (dataPoint + 0.8*CurrentCatchment.SParameter);
+        return Math.Pow(dataPoint - 0.2 * CurrentCatchment.SParameter, 2) / (dataPoint + 0.8 * CurrentCatchment.SParameter);
       }
 
-            foreach (var value in CurrentStorm.CumulativePrecipitation)
-            {
+      foreach (var value in CurrentStorm.CumulativePrecipitation)
+      {
         cumulativeLosses.Add(CumulativeLoss(value));
-            }
+      }
 
-            return cumulativeLosses.ToArray();
+      return cumulativeLosses.ToArray();
+    }
+
+    public Dictionary<double,double> convoluteRural()
+    {
+      List<Dictionary<double, double>> AllUnitHydrographs = new List<Dictionary<double,double>>();
+
+      for (var i = 0; i < EffectiveRunoff.Length; i++)
+      {
+        Dictionary<double, double> singleGraph = new Dictionary<double, double>();
+
+        double hydrographTime = TimeStep;
+
+        // Continue adding new points to the graph until the runoff response is less than 0.0005
+        while (new InstantaneousUnitResponse(this).NASH(EffectiveRunoff[i], hydrographTime + TimeStep * (i + 1)) > 0.005)
+        {
+
+          singleGraph.Add(hydrographTime + (TimeStep * (i + 1)), new InstantaneousUnitResponse(this).NASH(EffectiveRunoff[i], hydrographTime + TimeStep * (i + 1)));
+
+          hydrographTime = hydrographTime + TimeStep;
         }
 
-    /// <summary>
-    ///  need a convolution type now......
-    /// </summary>
-    public convoluteRural()
-    {
-      List<Dictionary<double,double>> AllUnitHydrographs;
-
-            for (var i = 0; i < EffectiveRunoff.Length; i++)
-            {
-              Dictionary<double, double> singleGraph = new Dictionary<double, double>;
-              while (new InstantaneousUnitResponse(this).NASH(EffectiveRunoff[i], TimeStep * (i + 1)) > 0.0005)
-              {
-                  
-                singleGraph.Add((TimeStep * (i + 1)), new InstantaneousUnitResponse(this).NASH(EffectiveRunoff[i], TimeStep * (i + 1)));
-
-              }
-
-              AllUnitHydrographs.Add(singleGraph)
+        AllUnitHydrographs.Add(singleGraph);
 
             }
 
-        
-    
+      return addLikeProperties(AllUnitHydrographs);
+
     }
+
+
+    public Dictionary<double,double> convoluteUrban()
+    {
+      List<Dictionary<double, double>> AllUnitHydrographs = new List<Dictionary<double, double>>();
+
+      for (var i = 0; i < EffectiveRunoff.Length; i++)
+      {
+        Dictionary<double, double> singleGraph = new Dictionary<double, double>();
+
+        double hydrographTime = TimeStep;
+
+        // Add the peak flow point to the graph
+        // Pre peak flow is not considered. Peak flow is estimated to occur at the timestep.
+        // Therefore, there are no values between 0 and the timestep calcualted by this method.
+        singleGraph.Add((TimeStep * (i + 1)), new InstantaneousUnitResponse(this).SCS("Peak", EffectiveRunoff[i], TimeStep * (i + 1)));
+
+        // Continue adding new points to the graph until the runoff response is less than 0.005
+        while (new InstantaneousUnitResponse(this).SCS("Post", EffectiveRunoff[i], hydrographTime + TimeStep * (i + 1)) > 0.005)
+        {
+
+          singleGraph.Add((hydrographTime + (TimeStep * (i + 1))), new InstantaneousUnitResponse(this).SCS("Post", EffectiveRunoff[i], hydrographTime + TimeStep * (i + 1)));
+
+          hydrographTime = hydrographTime + TimeStep;
+        }
+
+        AllUnitHydrographs.Add(singleGraph);
+
+            }
+      return addLikeProperties(AllUnitHydrographs);
+    }
+
+
+    public Dictionary<double, double> addLikeProperties(List<Dictionary<double, double>> graphList) 
+    {
+
+      Dictionary<double, double> finalGraph = new Dictionary<double, double>();
+
+      foreach(var graph in graphList)
+      {
+
+        foreach(var key in graph.Keys)
+        {
+
+          if(finalGraph.ContainsKey(key))
+          {
+            finalGraph[key] = finalGraph[key] + graph[key];
+          } else
+          {
+            finalGraph[key] = graph[key];
+          }
+
+        }
+
+      }
+
+      return finalGraph;
+
+    }
+
+
+    public (double[], double[]) ToGraph(Dictionary<double, double> graph)
+    {
+      double[] time = graph.Keys.ToArray();
+      double[] values = graph.Values.ToArray();
+
+      (double[], double[]) graphTuple = (time, values);
+
+      return graphTuple;
+    }
+
+  }
+
+
 
 public class InstantaneousUnitResponse
 {
